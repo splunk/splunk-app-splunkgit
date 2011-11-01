@@ -64,15 +64,14 @@ print_hashes_and_git_log_numstat ()
 fetch_git_repository ()
 {
   error_output=err.out
-  touch $error_output
   mkdir -p $GIT_REPOS_HOME
-  git clone --mirror $GIT_REPO $chosen_repository &> $error_output
-  if [ ! -s $error_output ]; then #if there are no errors from git clone.
+  git clone --mirror $GIT_REPO $chosen_repository 1>&2
+  git_exit_code=$?
+  if [[ $git_exit_code == 0 ]]; then
     print_hashes_and_git_log_numstat # try again
   else
-    cat $error_output 1>&2
+    echo "Unable to clone repository: $GIT_REPO" 1>&2
   fi
-  rm $error_output
 }
 
 main
