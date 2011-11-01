@@ -1,0 +1,71 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!--
+Copyright 2011 Splunk, Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<dashboard>
+  <label>Repository</label>
+  <row>
+    <single>
+      <title>Number of coders</title>
+      <searchTemplate>`number_of_coders`</searchTemplate>    
+   </single>
+</row>
+  <row>
+    <chart>
+      <searchName>active_authors_over_time</searchName>
+      <title>Number of active authors over time</title>
+      <option name="charting.chart">column</option>
+      <option name="charting.axisTitleX.text">Time</option>
+      <option name="charting.axisTitleY.text">Number of active authors</option>
+      <option name="charting.axisY">numeric</option>
+      <option name="charting.chart.stackMode">stacked</option>
+      </chart>
+  </row>
+  <row>
+    <chart>
+      <searchName>author_count_vs_commit_count</searchName>
+      <title>Number of authors over commit count</title>
+      <option name="charting.chart">line</option>
+      <option name="charting.axisTitleX.text">Number of commits</option>
+      <option name="charting.axisTitleY.text">Number of authors</option>
+      <option name="charting.axisY">numeric</option>
+      </chart>
+  </row>
+  <row>
+    <chart>
+      <searchName>impact_over_time</searchName>
+      <title>Impact Over Time</title>
+      <option name="charting.chart">area</option>
+      <option name="charting.axisTitleX.text">Time</option>
+      <option name="charting.axisTitleY.text">Impact</option>
+      <option name="charting.axisY">numeric</option>
+      <option name="charting.axisY.scale">log</option>
+      <option name="charting.chart.nullValueMode">zero</option>
+      </chart>
+  </row>
+  <row>
+    <chart>
+      <searchName>commit_count_over_time_groupedby_author</searchName>
+      <title>Total number of commits</title>
+      <option name="charting.chart">area</option>
+      <option name="charting.axisTitleX.text">Time</option>
+      <option name="charting.axisTitleY.text">Number of commits</option>
+      <option name="charting.axisY">numeric</option>
+      <option name="charting.chart.stackMode">stacked</option>
+      <option name="height">500px</option>
+      </chart>
+  </row>
+</dashboard>

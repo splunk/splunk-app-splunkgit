@@ -1,0 +1,65 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!--
+Copyright 2011 Splunk, Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<dashboard>
+  <label>Issues</label>
+  <row >
+    <single>
+      <searchString>`latest_fetched_github_issue_set` | search  github_issue_state="open" | stats count</searchString>
+      <title>Number of open issues</title>
+    </single>
+    <single>
+      <searchString>`latest_fetched_github_issue_set` | search  github_issue_state="closed" | stats count</searchString>
+      <title>Number of closed issues</title>
+    </single>
+    <single>
+      <searchString>`latest_fetched_github_issue_set` | stats count</searchString>
+      <title>Total number of issues</title>
+    </single>
+  </row>
+  <row>
+    <table>
+      <searchName>Latest opened issues (Still open)</searchName>
+      <title>Latest opened issues (Still open)</title>
+    </table>
+    <table>
+      <searchName>Latest closed issues (Still closed)</searchName>
+      <title>Latest closed issues (Still closed)</title>
+    </table>
+  </row>
+  <row>
+    <table>
+      <searchName>Latest updated issues</searchName>
+      <title>Latest updated issues</title>
+    </table>
+    <table>
+      <searchName>Oldest open issues (Still open)</searchName>
+      <title>Oldest open issues (Still open)</title>
+    </table>
+  </row>
+  <row grouping="1,2">
+    <table>
+      <title>Top 10 issue reporters</title>
+      <searchName>Top issue reporters</searchName>
+    </table>
+    <chart>
+      <title>Top 10 issue reporters</title>
+      <searchName>Top issue reporters</searchName>
+      <option name="charting.chart">pie</option>
+    </chart>
+  </row>
+</dashboard>

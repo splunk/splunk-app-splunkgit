@@ -1,0 +1,17 @@
+# OSX noise
+.DS_Store
+
+# Compiled python files
+*.pyc
+
+# Eclipse project files
+.project
+.pydevproject
+
+# Local stuff
+local/
+local.meta
+lib/
+
+# Git repositories folder
+git-repositories/

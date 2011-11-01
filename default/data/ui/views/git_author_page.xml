@@ -1,0 +1,84 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!--
+Copyright 2011 Splunk, Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<form>
+ <label>Authors</label>
+ <fieldset autoRun="true">
+  <input type="dropdown" token="author">
+   <label>Author</label>
+   <populatingSearch fieldForValue="author_name" fieldForLabel="author_name">index=splunkgit author_name=* | dedup author_name | sort author_name</populatingSearch>
+</input>
+ </fieldset>
+
+ <fieldset autoRun="false">
+  <input type="dropdown" token="filetype">
+   <label>File type</label>
+   <populatingSearch fieldForValue="file_type" fieldForLabel="file_type">index=splunkgit file_type=* | dedup file_type | sort file_type</populatingSearch>
+   <seed>*</seed>
+  <choice>*</choice>
+  <default>*</default>
+</input>
+ </fieldset>
+
+ <label>Files</label>
+ <fieldset>
+   <input type="text" token="file" />
+   <label>File</label>
+   <seed>*</seed>
+ </fieldset>
+
+  <row>
+    <single>
+      <title>Number of commits</title>
+      <searchTemplate>`number_of_commits_by_author_file_filetype("$author$","$file$","$filetype$")`</searchTemplate>
+    </single>
+    <single>
+      <title>First commit</title>
+      <searchTemplate>`first_commit_by_author_file_filetype("$author$","$file$","$filetype$")` | eval Time=strftime(_time,"%Y-%m-%d") | table Time</searchTemplate>
+    </single>
+    <single>
+      <title>Last commit</title>
+      <searchTemplate>`last_commit_by_author_file_filetype("$author$","$file$","$filetype$")` | eval Time=strftime(_time,"%Y-%m-%d") | table Time</searchTemplate>
+    </single>
+  </row>
+
+  <row>
+    <chart>
+      <title>Top file activity</title>
+      <searchTemplate>`most_impacted_files_by_author_file_filetype("$author$","$file$","$filetype$")`</searchTemplate>  
+      <option name="charting.chart">bar</option>
+      <option name="height">300px</option>
+      <option name="charting.chart.stackMode">stacked</option>
+      <option name="charting.axisTitleX.text">Rows</option>
+      <option name="charting.axisTitleY.text">File</option>
+    </chart>
+
+    <chart>
+      <title>Top comitted files</title>
+      <searchTemplate>`top_committed_files_by_author_file_filetype("$author$","$file$","$filetype$")`</searchTemplate>  
+      <option name="charting.chart">pie</option>
+      <option name="height">300px</option>
+    </chart>
+  </row>
+
+  <row>
+    <table>
+      <title>Repository statistics</title>
+      <searchTemplate>`repository_stats_by_author_file_filetype("$author$","$file$","$filetype$")`</searchTemplate>
+    </table>
+  </row>
+</form>
