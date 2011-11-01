@@ -48,7 +48,7 @@ print_hashes_and_git_log_numstat ()
   git fetch 1>&2
 
 #for each commit in the git history
-  for commit in `git log --pretty=format:'%H' --topo-order --all --no-color --no-renames --no-merges --skip=$NUMBER_OF_COMMITS_TO_SKIP`
+  for commit in `git log --pretty=format:'%H' --all --no-color --no-renames --no-merges --skip=$NUMBER_OF_COMMITS_TO_SKIP`
   do
     touch $numstat_file
     git --no-pager diff-tree $commit --pretty=format:'[%ci] author_name="%an" author_mail="%ae" commit_hash="%H" parrent_hash="%P" tree_hash="%T"' --numstat | sed '/^$/d' | awk -F \t -v FIRST_LINE=1 -v REPO="$GIT_REPO" '{if (FIRST_LINE==1) {FIRST_LINE=0;COMMIT_INFO=$0} else {print COMMIT_INFO" insertions=\""$1"\" deletions=\""$2"\" path=\""$3"\" file_type=\"---/"$3"---\" repository=\""REPO"\""}}' | perl -pe 's|---.*/(.+?)---|---\.\1---|' | perl -pe 's|---.*\.(.+?)---|\1|' |  tee $numstat_file
