@@ -37,6 +37,16 @@ class GithubAPI(object):
     
     def _issues(self, state='open'):
         return self.make_request('issues?state={0}'.format(state))
+
+    def issues_since(self, since):
+        request_issues_since = 'issues?since={0}'.format(since)
+        return self._open_issues(request_issues_since) + self._closed_issues(request_issues_since)
+
+    def _open_issues(self, request_prefix):
+        return self.make_request(request_prefix + '&state=open')
+
+    def _closed_issues(self, request_prefix):
+        return self.make_request(request_prefix + '&state=closed')
     
     def forks(self):
         return self.make_request('forks')

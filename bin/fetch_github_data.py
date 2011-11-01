@@ -28,6 +28,7 @@ sys.path.insert(0, LIB_PATH)
 from joblib import Parallel, delayed
 
 #import own classes
+from SplunkAPI import SplunkAPI
 from GithubAPI import GithubAPI
 from splunkgit_settings import github_repo_name, github_user_login_name
 
@@ -75,7 +76,13 @@ if __name__ == '__main__':
     time_stamp = strftime("%Y-%m-%d %H:%M:%S %z", localtime())    
 
     print '[{0}] github_watcher_count={1}'.format(time_stamp, len(github_api.watchers()))
-    all_issues = github_api.closed_issues() + github_api.open_issues()
+    
+    splunk_api = SplunkAPI('admin','changeme')
+    since = splunk_api.time_of_last_updated_issue()
+    if since is None:
+        since = '1900-01-01T00:00:01Z'
+    all_issues =  github_api.issues_since(since)
+
     for issue in all_issues :
         print u'[{0}] github_issue_number={1} github_issue_state="{2}" github_issue_comment_count={3} github_issue_reporter="{4}" github_issue_title="{5}" github_issue_close_time="{6}" github_issue_update_time="{7}" github_issue_creation_time="{8}"'.format(time_stamp, issue['number'], issue['state'], issue['comments'], issue['user']['login'], issue['title'], issue['closed_at'], issue['updated_at'], issue['created_at'])
     print '[{0}] github_forks_count={1}'.format(time_stamp, get_total_fork_count(github_api.forks()))
