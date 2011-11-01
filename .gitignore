@@ -11,7 +11,6 @@
 # Local stuff
 local/
 local.meta
-lib/
 
 # Git repositories folder
 git-repositories/
