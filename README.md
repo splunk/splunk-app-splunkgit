@@ -21,7 +21,8 @@ Changing repository
 
 - Stop splunk
 - Run the following command to wipe all app data from splunk:
-> splunk clean eventdata -f -index splunkgit
+
+        splunk clean eventdata -f -index splunkgit
 - Change the splunkgit.conf file, as described in [Configuration] section, to point to the new repo.
 - Start splunk
 
