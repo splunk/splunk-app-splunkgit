@@ -36,7 +36,7 @@ class SplunkAPI(object):
     
     def time_of_last_updated_issue(self):
         last_updated_issue_search = self._search_for_last_updated_issue()
-        return self._get_update_time_for_search(last_updated_issue_search)
+        return self._get_update_time_from_search(last_updated_issue_search)
         
     def _search_for_last_updated_issue(self):
         issue_search = search.dispatch('search index=splunkgit sourcetype="github_data" github_issue_update_time=* | sort -str(github_issue_update_time) | head 1')
@@ -44,18 +44,17 @@ class SplunkAPI(object):
             time.sleep(0.5)
         return issue_search
     
-    def _get_update_time_for_search(self, search):
+    def _get_update_time_from_search(self, search):
         if len(search) is 0:
             return None
         else: 
-            return self._get_update_time_for_head_of_search(self, search)
+            return self._get_update_time_from_head_of_search(search)
     
-    def _get_update_time_for_head_of_search(self, search):
+    def _get_update_time_from_head_of_search(self, search):
         return search.events[0]['github_issue_update_time']
         
 if __name__ == '__main__':
     github_api = GithubAPI(GITHUB_USER, GITHUB_REPO)
     splunk_api = SplunkAPI('admin','changeme')
-    since = splunk_api.last_updated_issue()
-    print since
-    print github_api.issues_since(since)
+    since = splunk_api.time_of_last_updated_issue()
+    github_api.issues_since(since)
