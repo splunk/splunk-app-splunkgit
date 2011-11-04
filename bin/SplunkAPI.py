@@ -41,7 +41,7 @@ class SplunkAPI(object):
     def _search_for_last_updated_issue(self):
         issue_search = search.dispatch('search index=splunkgit sourcetype="github_data" github_issue_update_time=* | sort -str(github_issue_update_time) | head 1')
         while not issue_search.isDone:
-            time.sleep(0.5)
+            time.sleep(0.5) #for a while
         return issue_search
     
     def _get_update_time_from_search(self, search):
