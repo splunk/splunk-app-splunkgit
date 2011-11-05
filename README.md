@@ -31,3 +31,8 @@ Third Party Libraries
 
 - [httplib2](http://code.google.com/p/httplib2/)
 - [joblib](http://code.google.com/p/httplib2/)
+
+Known Issues
+============
+
+- If you clone this repository, install the app and start up Splunk without configurating your own splunkgit.conf - as explained in 'Changing repository' - Splunk will get git repository data from this repositories .git directory.
