@@ -18,8 +18,9 @@
 # Author: Petter Eriksson, Emre Berge Ergenekon
 
 #Global variables
-APP_HOME=$SPLUNK_HOME/etc/apps/Splunkgit
-GIT_REPO=`splunk cmd python $APP_HOME/bin/splunkgit_settings.py`
+SCRIPT_HOME=$(dirname $0)
+APP_HOME=`splunk cmd ./$SCRIPT_HOME/app_home.sh`
+GIT_REPO=`splunk cmd python $SCRIPT_HOME/splunkgit_settings.py`
 GIT_REPO_FOLDER=`echo $GIT_REPO | sed 's/.*\///'`
 GIT_REPOS_HOME=$APP_HOME/git-repositories
 chosen_repository=$GIT_REPOS_HOME/$GIT_REPO_FOLDER
