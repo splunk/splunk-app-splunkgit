@@ -14,6 +14,9 @@ Configuration
     - 'repo_address=' The address to the repo. Ex: git@github.com:splunk/splunk-app-splunkgit
     - 'user_login_name=' The login name of the repo owner in github. Ex: splunk
     - 'repo_name=' The name of the github repo. Ex: splunk-app-splunkgit
+    - And under the [splunk] stanza we have
+        - 'user=' Splunk user login so our scripts can search in Splunk
+        - 'password=' Splunk password for the user
 - Start splunk
 
 Changing repository
