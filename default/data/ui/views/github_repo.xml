@@ -37,6 +37,7 @@ limitations under the License.
       <option name="charting.axisY">numeric</option>
       <option name="charting.axisY.minimumNumber"><searchTemplate >`min_number_of_watchers`</searchTemplate></option>
       <option name="charting.axisY.maximumNumber"><searchTemplate >`max_number_of_watchers`</searchTemplate></option>
+      <option name="charting.chart.nullValueMode">connect</option>
       </chart>
     <chart>
       <title>Forks count over time</title>
@@ -44,6 +45,7 @@ limitations under the License.
       <option name="charting.chart">line</option>
       <option name="charting.axisTitleX.text">Time</option>
       <option name="charting.axisTitleY.text">Number of forks</option>
+      <option name="charting.chart.nullValueMode">connect</option>
     </chart>
   </row>
 </dashboard>
