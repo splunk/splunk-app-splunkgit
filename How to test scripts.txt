@@ -1,0 +1,14 @@
+This is how you can manually test our scripted inputs.
+
+Prerequisites:
+1. Make sure 'splunk' is in your $PATH.
+2. Make sure you've read and understood our README.md
+
+Test the scripts by opening up a terminal and locating the 'bin' folder of this app, which could be located at:
+$SPLUNK_HOME/etc/apps/splunkgit/bin
+
+To test our git repository data type:
+  splunk cmd ./fetch_git_repo_data.sh
+
+To test the github data type:
+  splunk cmd python fetch_github_data.py

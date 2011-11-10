@@ -16,6 +16,8 @@ import json
 import httplib2
 import re
 
+import inspect
+
 class GithubAPI(object):
     '''
     Author: Emre Berge Ergenekon
@@ -52,7 +54,7 @@ class GithubAPI(object):
         return self.make_request('forks')
     
     def make_request(self, partial_url):
-        http = httplib2.Http()
+        http = self._get_http()
         next_url = self._create_full_api_url(partial_url)
         last_url = ''
         all_responses = []
@@ -65,6 +67,14 @@ class GithubAPI(object):
             last_url = self._link_header_value_for_reletion(response, 'last')
         return all_responses
     
+    def _get_http(self):
+        #disable ssl_certificate_validation because of an issue with python 2.7.2 and httplib2 0.7.x
+        #link: http://code.google.com/p/httplib2/issues/detail?id=154
+        if 'disable_ssl_certificate_validation' in inspect.getargspec(httplib2.Http.__init__)[0]:
+            return httplib2.Http(disable_ssl_certificate_validation=True)
+        else:
+            return httplib2.Http()
+        
     def _create_full_api_url(self, partial_url):
         return '{base_url}/{partial_url}{parameter_separator}per_page=100'.format(base_url=self._base_url, partial_url=partial_url, parameter_separator=('&' if '?' in partial_url else '?'))
     

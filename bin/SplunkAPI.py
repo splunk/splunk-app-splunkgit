@@ -52,9 +52,3 @@ class SplunkAPI(object):
     
     def _get_update_time_from_head_of_search(self, search):
         return search.events[0]['github_issue_update_time']
-        
-if __name__ == '__main__':
-    github_api = GithubAPI(GITHUB_USER, GITHUB_REPO)
-    splunk_api = SplunkAPI('admin','changeme')
-    since = splunk_api.time_of_last_updated_issue()
-    github_api.issues_since(since)

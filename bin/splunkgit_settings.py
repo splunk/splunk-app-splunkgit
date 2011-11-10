@@ -20,6 +20,7 @@ Author: Emre Berge Ergenekon, Petter Eriksson
 '''
 SPLUNKGIT_GIT_SETTINGS = splunk.clilib.cli_common.getConfStanza('splunkgit','git')
 SPLUNKGIT_GITHUB_SETTINGS = splunk.clilib.cli_common.getConfStanza('splunkgit','github')
+SPLUNK_SETTINGS = splunk.clilib.cli_common.getConfStanza('splunkgit','splunk')
 
 def git_repo_address():
     return SPLUNKGIT_GIT_SETTINGS['repo_address']
@@ -29,6 +30,12 @@ def github_user_login_name():
 
 def github_repo_name():
     return SPLUNKGIT_GITHUB_SETTINGS['repo_name']
+
+def splunk_user_name():
+    return SPLUNK_SETTINGS['user']
+
+def splunk_password():
+    return SPLUNK_SETTINGS['password']
 
 if __name__ == '__main__':
     print git_repo_address()

@@ -30,10 +30,10 @@ from joblib import Parallel, delayed
 #import own classes
 from SplunkAPI import SplunkAPI
 from GithubAPI import GithubAPI
-from splunkgit_settings import github_repo_name, github_user_login_name
+import splunkgit_settings
 
-GITHUB_USER = github_user_login_name()
-GITHUB_REPO = github_repo_name()
+GITHUB_USER = splunkgit_settings.github_user_login_name()
+GITHUB_REPO = splunkgit_settings.github_repo_name()
 
 def get_total_fork_count(forks, run_as_single_job=False):
     total_number_of_forks = 1
@@ -77,7 +77,7 @@ if __name__ == '__main__':
 
     print '[{0}] github_watcher_count={1}'.format(time_stamp, len(github_api.watchers()))
     
-    splunk_api = SplunkAPI('admin','changeme')
+    splunk_api = SplunkAPI(splunkgit_settings.splunk_user_name(), splunkgit_settings.splunk_password())
     since = splunk_api.time_of_last_updated_issue()
     if since is None:
         since = '1900-01-01T00:00:01Z'

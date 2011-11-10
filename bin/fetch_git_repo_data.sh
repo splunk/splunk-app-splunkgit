@@ -20,6 +20,7 @@
 #Global variables
 SCRIPT_HOME=$(dirname $0)
 APP_HOME=`splunk cmd ./$SCRIPT_HOME/app_home.sh`
+APP_NAME=`echo $APP_HOME | sed 's/.*\///'`
 GIT_REPO=`splunk cmd python $SCRIPT_HOME/splunkgit_settings.py`
 GIT_REPO_FOLDER=`echo $GIT_REPO | sed 's/.*\///'`
 GIT_REPOS_HOME=$APP_HOME/git-repositories
@@ -27,17 +28,19 @@ chosen_repository=$GIT_REPOS_HOME/$GIT_REPO_FOLDER
 
 #echo $chosen_repository
 
-NUMBER_OF_COMMITS_TO_SKIP=`splunk search "index=splunkgit | stats dc(commit_hash) as commitCount" -auth admin:changeme -app Splunkgit | grep -o -P '[0-9]+'`
-
 main ()
 {
-if [ -d "$chosen_repository" ]; then
+if [ "$GIT_REPO" = "" ]; then
+  echo "Could not find configured git repository. Have you configured splunkgit.conf? Read README.md for more information." 1>&2
+else
+  if [ -d "$chosen_repository" ]; then
     print_hashes_and_git_log_numstat
   else
     #TODO Handle this
     echo "repository does not exist!" 1>&2
     fetch_git_repository
   fi
+fi
 }
 
 #Not safe to run this method parallel from the same directory, since the $numstat_file is touched, written to and deleted.
@@ -47,6 +50,8 @@ print_hashes_and_git_log_numstat ()
   numstat_file=git-commit-formatted.out #temporary gather git-diff-tree output
   cd $chosen_repository
   git fetch 1>&2
+
+  NUMBER_OF_COMMITS_TO_SKIP=`splunk search "index=splunkgit | stats dc(commit_hash) as commitCount" -auth admin:changeme -app $APP_NAME | grep -o -P '[0-9]+'`
 
 #for each commit in the git history
   for commit in `git log --pretty=format:'%H' --all --no-color --no-renames --no-merges --skip=$NUMBER_OF_COMMITS_TO_SKIP`
