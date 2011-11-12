@@ -1,30 +1,27 @@
-This application needs an awsome software called [Splunk](http://www.splunk.com/).
+This application needs an awesome software called [Splunk](http://www.splunk.com/).
 
-Currently the apllication is testet and the documentation written for MAC OSX 10.7
+Currently the apllication is testet and the documentation written for Mac OS X 10.7
 
 Installing Splunk
 =================
 
-Generic installation
+Generic instructions
 --------------------
 
 - [Download Splunk for your platform](http://www.splunk.com/download?r=productOverview).
 - Unpack/Install Splunk by running the downloaded files.
-- Follow the instruktions on screen
+- Follow the instructions on screen
 - When done continue to *Installing Splunkgit App* section
 
-MAC OSX 10.7 installation
+Mac OS X 10.7 instructions
 -------------------------
 
 - Use this [direct link][] to download a gzipped tar ball of Splunk.
 - Open a Terminal 
-- Untar/unzip the downloaded file:
-    
-        `tar -xvf <FILE_NAME>`
-- Start splunk:
+- Untar/unzip the downloaded file: `tar -xvf <FILE_NAME>`
+- Start splunk: `<SPLUNK_ROOT>/bin/splunk start`
 
-        <SPLUNK_ROOT>/bin/splunk start
-  `<SPLUNK_ROOT>` is the direcotry where you extracted splunk:
+`<SPLUNK_ROOT>` is the direcotry where you extracted splunk:
 
 [direct link]:http://www.splunk.com/index.php/download_track?file=4.2.4/splunk/osx/splunk-4.2.4-110225-Darwin-universal.tgz&platform=MacOS&architecture=x86&version=4.2.4&typed=release&name=osx_installer&d=pro
        "Direct link to Splunk for MAC"
@@ -33,28 +30,16 @@ Installing Splunkgit App
 ========================
 
 - Open Terminal app
-- Goto `<SPLUNK_ROOT>`:
-
-        cd <SPLUNK_ROOT>
-- Stop splunk:
-
-        bin/splunk stop
-- Goto app directory:
-
-        cd etc/app directory
-- Downlaod the app:
-        
-        git clone git@github.com:splunk/splunk-app-splunkgit.git
-  You can also download a released version from the [tags](./tags) page.
-- Create a cirectory called local:
-
-        mkdir local
-- Copy `splunkgit.conf` from default to local:
-
-        cp default/splunkgit.conf local
-- Start splunk
-
-        bin/splunk start
+- Goto `<SPLUNK_ROOT>`: `cd <SPLUNK_ROOT>`
+- Stop splunk: `bin/splunk stop`
+- Goto app directory: `cd etc/apps`
+- Download the app: `git clone git://github.com/splunk/splunk-app-splunkgit.git`  
+  You can also download a released version from the [tags](./splunk-app-splunkgit/tags) page.
+- Goto Splunkgit directory: `cd splunk-app-splunkgit`
+- Create a directory called local: `mkdir local`
+- Copy `splunkgit.conf` from default to local: `cp default/splunkgit.conf local`
+- Go back to `<SPLUNK_ROOT>`: `cd ..`
+- Start splunk `bin/splunk start`
 
 Configuration
 =============
@@ -62,10 +47,7 @@ Configuration
 - Open Terminal app
 - Goto `<SPLUNK_ROOT>`
 - Stop splunk
-- Edit local/splunkgit.conf with a text editor and assign the following values:
-
-        open -e local/splunkgit.conf
-
+- Edit local/splunkgit.conf with a text editor (`open -e local/splunkgit.conf`) and assign the following values:
     - `repo_address=` The address to the repo. Ex: `git@github.com:splunk/splunk-app-splunkgit`
     - `user_login_name=` The login name of the repo owner in github. Ex: `splunk`
     - `repo_name=` The name of the github repo. Ex: `splunk-app-splunkgit`
