@@ -2,18 +2,18 @@ This application needs an awesome software called [Splunk](http://www.splunk.com
 
 Currently the application is tested and the documentation written for Mac OS X 10.7
 
-# Getting started #
+# Getting Started #
 
 ## Installing Splunk ###
 
-### Generic instructions ###
+### Generic Instructions ###
 
 - [Download Splunk for your platform](http://www.splunk.com/download?r=productOverview).
 - Unpack/Install Splunk by running the downloaded files.
 - Follow the instructions on screen
 - When done continue to *Installing Splunkgit App* section
 
-### Mac OS X 10.7 instructions ###
+### Mac OS X 10.7 Instructions ###
 
 - Use this [direct link][] to download a gzipped tar ball of Splunk.
 - Open a Terminal 
@@ -49,7 +49,7 @@ Currently the application is tested and the documentation written for Mac OS X 1
     - `user=` Splunk user login so our scripts can search in Splunk
     - `password=` Splunk password for the user
 
-## Changing repository ##
+## Changing Repository ##
 
 - Make sure splunk is not running
 - Run the following command to wipe all app data from splunk:
