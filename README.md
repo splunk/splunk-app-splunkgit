@@ -29,9 +29,9 @@ Mac OS X 10.7 instructions
 Installing Splunkgit App
 ========================
 
+- Make sure splunk is not running
 - Open Terminal app
 - Goto `<SPLUNK_ROOT>`: `cd <SPLUNK_ROOT>`
-- Stop splunk: `bin/splunk stop`
 - Goto app directory: `cd etc/apps`
 - Download the app: `git clone git://github.com/splunk/splunk-app-splunkgit.git`  
   You can also download a released version from the [tags](./splunk-app-splunkgit/tags) page.
@@ -39,11 +39,11 @@ Installing Splunkgit App
 - Create a directory called local: `mkdir local`
 - Copy `splunkgit.conf` from default to local: `cp default/splunkgit.conf local`
 - Go back to `<SPLUNK_ROOT>`: `cd ..`
-- Start splunk `bin/splunk start`
 
 Configuration
 =============
 
+- Make sure splunk is not running
 - Open Terminal app
 - Goto `<SPLUNK_ROOT>`
 - Stop splunk
@@ -54,18 +54,25 @@ Configuration
     - `user=` Splunk user login so our scripts can search in Splunk
     - `password=` Splunk password for the user
 
-- Start splunk
-
 Changing repository
 ===================
 
-- Stop splunk
+- Make sure splunk is not running
 - Run the following command to wipe all app data from splunk:
 
         splunk clean eventdata -f -index splunkgit
 
 - Change the splunkgit.conf file, as described in *Configuration* section, to point to the new repo.
-- Start splunk
+
+Starting and Stoping Splunk
+===========================
+- Open Terminal
+- Goto `<SPLUNK_ROOT>`: `cd <SPLUNK_ROOT>`
+- Start splunk `bin/splunk start`
+    - On you web browser goto `http://localhost:8000`
+    - If asked enter your name and user name (default value is **admin:password**)
+    - If you change the password, you also need the change the configuration file to match this.
+- Stop splunk: `bin/splunk stop`
 
 Third Party Libraries
 =====================
