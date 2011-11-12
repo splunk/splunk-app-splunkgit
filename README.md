@@ -2,18 +2,18 @@ This application needs an awesome software called [Splunk](http://www.splunk.com
 
 Currently the application is tested and the documentation written for Mac OS X 10.7
 
-# Getting Started #
+# Getting started #
 
-## Installing Splunk ###
+## Installing splunk ###
 
-### Generic Instructions ###
+### Generic instructions ###
 
 - [Download Splunk for your platform](http://www.splunk.com/download?r=productOverview).
 - Unpack/Install Splunk by running the downloaded files.
 - Follow the instructions on screen
 - When done continue to *Installing Splunkgit App* section
 
-### Mac OS X 10.7 Instructions ###
+### Mac OS X 10.7 instructions ###
 
 - Use this [direct link][] to download a gzipped tar ball of Splunk.
 - Open a Terminal 
@@ -25,7 +25,7 @@ Currently the application is tested and the documentation written for Mac OS X 1
 [direct link]:http://www.splunk.com/index.php/download_track?file=4.2.4/splunk/osx/splunk-4.2.4-110225-Darwin-universal.tgz&platform=MacOS&architecture=x86&version=4.2.4&typed=release&name=osx_installer&d=pro
        "Direct link to Splunk for MAC"
 
-## Installing Splunkgit ##
+## Installing splunkgit ##
 
 - Make sure splunk is not running
 - Open Terminal app
@@ -49,7 +49,7 @@ Currently the application is tested and the documentation written for Mac OS X 1
     - `user=` Splunk user login so our scripts can search in Splunk
     - `password=` Splunk password for the user
 
-## Changing Repository ##
+## Changing repository ##
 
 - Make sure splunk is not running
 - Run the following command to wipe all app data from splunk:
@@ -58,7 +58,7 @@ Currently the application is tested and the documentation written for Mac OS X 1
 
 - Change the splunkgit.conf file, as described in *Configuration* section, to point to the new repo.
 
-## Starting and stoping Splunk ##
+## Starting and stopping Splunk ##
 
 - Open Terminal
 - Goto `<SPLUNK_ROOT>`: `cd <SPLUNK_ROOT>`
