@@ -56,6 +56,19 @@ limitations under the License.
   </row>
 
   <row>
+    <chart>
+      <title>Commits on file(s) over time by author</title>
+      <searchTemplate>`commits_over_time_on_by_file(file="$file$")`</searchTemplate>
+      <option name="charting.chart">column</option>
+      <option name="charting.axisTitleX.text">Time</option>
+      <option name="charting.axisTitleY.text">Commits by author</option>
+      <option name="charting.axisY">numeric</option>
+      <option name="charting.chart.stackMode">stacked</option>
+    </chart>
+  </row>
+
+
+  <row>
     <table>
       <title>Matched files</title>
       <searchTemplate>`match_file(file="$file$")`</searchTemplate>
