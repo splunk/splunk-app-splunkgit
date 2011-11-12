@@ -25,7 +25,7 @@ Currently the application is tested and the documentation written for Mac OS X 1
 [direct link]:http://www.splunk.com/index.php/download_track?file=4.2.4/splunk/osx/splunk-4.2.4-110225-Darwin-universal.tgz&platform=MacOS&architecture=x86&version=4.2.4&typed=release&name=osx_installer&d=pro
        "Direct link to Splunk for MAC"
 
-## Installing Splunkgit App ##
+## Installing Splunkgit ##
 
 - Make sure splunk is not running
 - Open Terminal app
@@ -58,7 +58,7 @@ Currently the application is tested and the documentation written for Mac OS X 1
 
 - Change the splunkgit.conf file, as described in *Configuration* section, to point to the new repo.
 
-## Starting and Stoping Splunk ##
+## Starting and stoping Splunk ##
 
 - Open Terminal
 - Goto `<SPLUNK_ROOT>`: `cd <SPLUNK_ROOT>`
@@ -68,12 +68,12 @@ Currently the application is tested and the documentation written for Mac OS X 1
     - If you change the password, you also need the change the configuration file to match this.
 - Stop splunk: `bin/splunk stop`
 
-# Third Party Libraries #
+# Third party libraries #
 
 - [httplib2](http://code.google.com/p/httplib2/ "httplib2")
 - [joblib](http://code.google.com/p/httplib2/ "joblib")
 
-# Known Issues #
+# Known issues #
 
 - If you clone this repository, install the app and start up Splunk without configurating your own splunkgit.conf (as explained in *Changing repository*) splunk will get git repository data from this repositories .git directory.
 - Currently only read-only addresses work. Don't use `https` or `git@github` addresses. 
