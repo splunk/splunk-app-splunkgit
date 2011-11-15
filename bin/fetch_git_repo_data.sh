@@ -47,24 +47,17 @@ fi
 #TODO: Figure out a way to remove the $numstat_file logic.
 print_hashes_and_git_log_numstat ()
 {
-  numstat_file=git-commit-formatted.out #temporary gather git-diff-tree output
   cd $chosen_repository
   git fetch 1>&2
 
   NUMBER_OF_COMMITS_TO_SKIP=`splunk search "index=splunkgit | stats dc(commit_hash) as commitCount" -auth admin:changeme -app $APP_NAME | grep -o -P '[0-9]+'`
 
-#for each commit in the git history
-  for commit in `git log --pretty=format:'%H' --all --no-color --no-renames --no-merges --skip=$NUMBER_OF_COMMITS_TO_SKIP`
-  do
-    touch $numstat_file
-    git --no-pager diff-tree $commit --pretty=format:'[%ci] author_name="%an" author_mail="%ae" commit_hash="%H" parrent_hash="%P" tree_hash="%T"' --numstat | sed '/^$/d' | awk -F \t -v FIRST_LINE=1 -v REPO="$GIT_REPO" '{if (FIRST_LINE==1) {FIRST_LINE=0;COMMIT_INFO=$0} else {print COMMIT_INFO" insertions=\""$1"\" deletions=\""$2"\" path=\""$3"\" file_type=\"---/"$3"---\" repository=\""REPO"\""}}' | perl -pe 's|---.*/(.+?)---|---\.\1---|' | perl -pe 's|---.*\.(.+?)---|\1|' |  tee $numstat_file
-
-    if [ ! -s $numstat_file ]; then #if there was no numstat output, just print the commit_info
-      git --no-pager show $commit --pretty=format:'[%ci] author_name="%an" author_mail="%ae" commit_hash="%H" parrent_hash="%P" tree_hash="%T"' --quiet
-      echo ;
-    fi
-    rm $numstat_file #clean up
-  done
+#For each commit in the repository do:
+#if commit doesn't have edited lines, just print 'time, author_name, author_mail, commit...'
+#else
+#for each file change in commit do:
+#print commit info in front of every file change.
+  git log --pretty=format:'[%ci] author_name="%an" author_mail="%ae" commit_hash="%H" parrent_hash="%P" tree_hash="%T"' --numstat --all --no-color --no-renames --no-merges --skip=$NUMBER_OF_COMMITS_TO_SKIP | sed '/^$/d' | awk -F \t -v FIRST_LINE=1 -v REPO="$GIT_REPO" -v RECENT_COMMIT=0 '{IS_COMMIT = match($0, /^\[/); if (IS_COMMIT) { if (RECENT_COMMIT==1) {print COMMIT_INFO } RECENT_COMMIT=1; COMMIT_INFO=$0} else {RECENT_COMMIT=0; print COMMIT_INFO" insertions=\""$1"\" deletions=\""$2"\" path=\""$3"\" file_type=\"---/"$3"---\" repository=\""REPO"\""}}' | perl -pe 's|---.*/(.+?)---|---\.\1---|' | perl -pe 's|---.*\.(.+?)---|\1|'
 }
 
 fetch_git_repository ()
