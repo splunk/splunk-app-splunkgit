@@ -6,6 +6,7 @@ This application needs an awesome software called [Splunk](http://www.splunk.com
 Currently the application is tested and the documentation written for Mac OS X 10.7
 
 Stuff in this repository are mentioned on a four part blog series.
+
 - [part 1](http://blogs.splunk.com/2011/11/9/splunkgit-part-1)
 - [part 2](http://blogs.splunk.com/2011/11/9/splunkgit-part-2)
 - [part 3](http://blogs.splunk.com/2011/11/17/splunkgit-part-3)
