@@ -1,19 +1,29 @@
+Splunk > Splunkgit
+==================
+
 This application needs an awesome software called [Splunk](http://www.splunk.com/).
 
 Currently the application is tested and the documentation written for Mac OS X 10.7
 
-# Getting started #
+Stuff in this repository are mentioned on a four part blog series.
+- [part 1](http://blogs.splunk.com/2011/11/9/splunkgit-part-1)
+- [part 2](http://blogs.splunk.com/2011/11/9/splunkgit-part-2)
+- [part 3](http://blogs.splunk.com/2011/11/17/splunkgit-part-3)
+- [part 4](http://blogs.splunk.com/2011/11/18/splunkgit-part-4)
 
-## Installing splunk ###
+Getting started
+---------------
 
-### Generic instructions ###
+### Installing splunk
+
+#### Generic instructions
 
 - [Download Splunk for your platform](http://www.splunk.com/download?r=productOverview).
 - Unpack/Install Splunk by running the downloaded files.
 - Follow the instructions on screen
 - When done continue to *Installing Splunkgit App* section
 
-### Mac OS X 10.7 instructions ###
+#### Mac OS X 10.7 instructions ####
 
 - Use this [direct link][] to download a gzipped tar ball of Splunk.
 - Open a Terminal 
@@ -25,7 +35,7 @@ Currently the application is tested and the documentation written for Mac OS X 1
 [direct link]:http://www.splunk.com/index.php/download_track?file=4.2.4/splunk/osx/splunk-4.2.4-110225-Darwin-universal.tgz&platform=MacOS&architecture=x86&version=4.2.4&typed=release&name=osx_installer&d=pro
        "Direct link to Splunk for MAC"
 
-## Installing splunkgit ##
+### Installing splunkgit
 
 - Make sure splunk is not running
 - Open Terminal app
@@ -37,7 +47,7 @@ Currently the application is tested and the documentation written for Mac OS X 1
 - Create a directory called local: `mkdir local`
 - Copy `splunkgit.conf` from default to local: `cp default/splunkgit.conf local`
 
-## Configuration ##
+### Configuration
 
 - Make sure splunk is not running
 - Open Terminal app
@@ -49,7 +59,7 @@ Currently the application is tested and the documentation written for Mac OS X 1
     - `user=` Splunk user login so our scripts can search in Splunk
     - `password=` Splunk password for the user
 
-## Changing repository ##
+### Changing repository
 
 - Make sure splunk is not running
 - Run the following command to wipe all app data from splunk:
@@ -58,7 +68,7 @@ Currently the application is tested and the documentation written for Mac OS X 1
 
 - Change the splunkgit.conf file, as described in *Configuration* section, to point to the new repo.
 
-## Starting and stopping Splunk ##
+### Starting and stopping Splunk
 
 - Open Terminal
 - Goto `<SPLUNK_ROOT>`: `cd <SPLUNK_ROOT>`
@@ -68,17 +78,20 @@ Currently the application is tested and the documentation written for Mac OS X 1
     - If you change the password, you also need the change the configuration file to match this.
 - Stop splunk: `bin/splunk stop`
 
-# Third party libraries #
+Third party libraries
+---------------------
 
 - [httplib2](http://code.google.com/p/httplib2/ "httplib2")
 - [joblib](http://code.google.com/p/httplib2/ "joblib")
 
-# Known issues #
+Known issues
+------------
 
 - If you clone this repository, install the app and start up Splunk without configurating your own splunkgit.conf (as explained in *Changing repository*) splunk will get git repository data from this repositories .git directory.
 - Currently only read-only addresses work. Don't use `https` or `git@github` addresses. 
 
-# License #
+License
+-------
 
     Copyright 2011 Splunk, Inc.
     
