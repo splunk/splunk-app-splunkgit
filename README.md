@@ -37,9 +37,6 @@ Getting started
 - Goto app directory: `cd etc/apps`
 - Download the app: `git clone git://github.com/splunk/splunk-app-splunkgit.git`  
   You can also download a released version from the [tags](./splunk-app-splunkgit/tags) page.
-- Goto Splunkgit directory: `cd splunk-app-splunkgit`
-- Create a directory called local: `mkdir local`
-- Copy `splunkgit.conf` from default to local: `cp default/splunkgit.conf local`
 
 ### Configuration
 
