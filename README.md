@@ -24,13 +24,6 @@ Getting started
 - Follow the instructions on screen
 - When done continue to *Installing Splunkgit App* section
 
-#### Mac OS X 10.7 instructions ####
-
-- Use this [direct link][] to download a gzipped tar ball of Splunk.
-- Open a Terminal 
-- Untar/unzip the downloaded file: `tar -xvf <FILE_NAME>`
-- When done continue to *Installing Splunkgit App* section
-
 `<SPLUNK_ROOT>` is the direcotry where you extracted splunk:
 
 [direct link]:http://www.splunk.com/index.php/download_track?file=4.2.4/splunk/osx/splunk-4.2.4-110225-Darwin-universal.tgz&platform=MacOS&architecture=x86&version=4.2.4&typed=release&name=osx_installer&d=pro
