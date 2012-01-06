@@ -22,6 +22,18 @@ SPLUNKGIT_GIT_SETTINGS = splunk.clilib.cli_common.getConfStanza('splunkgit','git
 SPLUNKGIT_GITHUB_SETTINGS = splunk.clilib.cli_common.getConfStanza('splunkgit','github')
 SPLUNK_SETTINGS = splunk.clilib.cli_common.getConfStanza('splunkgit','splunk')
 
+class GithubUserRepo(object):
+
+    def __init__(self, user, repo):
+        self._user = user
+        self._repo = repo
+
+    def get_user(self):
+        return self._user
+
+    def get_repo(self):
+        return self._repo
+
 def git_repo_addresses():
     return SPLUNKGIT_GIT_SETTINGS['repo_addresses']
 
