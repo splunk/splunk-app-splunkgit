@@ -64,14 +64,26 @@ def github_user_repos_from_repo_addresses(repo_addresses):
     return github_user_repos
 
 def github_user_repo_from_repo_address(repo_address):
-    user_match = re.search('(?<=github\.com.)(.*)(?=/)', repo_address) # match anything after github.com until /
-    if user_match is not None:
-        user = user_match.group(0)
-        repo_match = re.search("(?<=%s/)(.*?\.git)" % user, repo_address) # match <something>.git after user/
-        if repo_match is not None:
-            repo = repo_match.group(0)
+    user = get_user_from_repo_address(repo_address)
+    if user is not None:
+        repo = get_repo_from_repo_address(repo_address, user)
+        if repo is not None:
             return GithubUserRepo(user, repo)
     return None
+
+def get_user_from_repo_address(repo_address):
+    user_match = re.search('(?<=github\.com.)(.*)(?=/)', repo_address) # match anything after github.com until /
+    if user_match is not None:
+        return user_match.group(0)
+    else:
+        return None
+
+def get_repo_from_repo_address(repo_address, user):
+    repo_match = re.search("(?<=%s/)(.*?\.git)" % user, repo_address) # match <something>.git after user/
+    if repo_match is not None:
+        return repo_match.group(0)
+    else:
+        return None
 
 if __name__ == '__main__':
     print git_repo_addresses()
