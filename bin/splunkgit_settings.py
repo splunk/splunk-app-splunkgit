@@ -79,7 +79,7 @@ def get_user_from_repo_address(repo_address):
         return None
 
 def get_repo_from_repo_address(repo_address, user):
-    repo_match = re.search("(?<=%s/)(.*?\.git)" % user, repo_address) # match <something>.git after user/
+    repo_match = re.search("(?<=%s/)(.*)(?=\.git)" % user, repo_address) # match <something>.git after user/
     if repo_match is not None:
         return repo_match.group(0)
     else:
