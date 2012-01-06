@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import splunk.clilib.cli_common
+import re
 
 '''
 Functions for retriveing settigs from splunkgit conf file.
@@ -48,6 +49,29 @@ def splunk_user_name():
 
 def splunk_password():
     return SPLUNK_SETTINGS['password']
+
+def github_user_repos():
+    space_separated_repo_addresses = git_repo_addresses()
+    repo_addresses = space_separated_repo_addresses.split(' ')
+    return github_user_repos_from_repo_addresses(repo_addresses)
+
+def github_user_repos_from_repo_addresses(repo_addresses):
+    github_user_repos = []
+    for repo_address in repo_addresses:
+        github_user_repo = github_user_repo_from_repo_address(repo_address)
+        if github_user_repo is not None:
+            github_user_repos.append(github_user_repo)
+    return github_user_repos
+
+def github_user_repo_from_repo_address(repo_address):
+    user_match = re.search('(?<=github\.com.)(.*)(?=/)', repo_address) # match anything after github.com until /
+    if user_match is not None:
+        user = user_match.group(0)
+        repo_match = re.search("(?<=%s/)(.*?\.git)" % user, repo_address) # match <something>.git after user/
+        if repo_match is not None:
+            repo = repo_match.group(0)
+            return GithubUserRepo(user, repo)
+    return None
 
 if __name__ == '__main__':
     print git_repo_addresses()
