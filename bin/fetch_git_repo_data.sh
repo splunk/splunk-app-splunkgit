@@ -21,26 +21,33 @@
 SCRIPT_HOME=$(dirname $0)
 APP_HOME=`splunk cmd ./$SCRIPT_HOME/app_home.sh`
 APP_NAME=`echo $APP_HOME | sed 's/.*\///'`
-GIT_REPO=`splunk cmd python $SCRIPT_HOME/splunkgit_settings.py`
-GIT_REPO_FOLDER=`echo $GIT_REPO | sed 's/.*\///'`
-GIT_REPOS_HOME=$APP_HOME/git-repositories
-chosen_repository=$GIT_REPOS_HOME/$GIT_REPO_FOLDER
 
-#echo $chosen_repository
+#Initializing
+GIT_REPO=
+GIT_REPO_FOLDER=
+GIT_REPOS_HOME=
+chosen_repository=
 
 main ()
 {
-if [ "$GIT_REPO" = "" ]; then
-  echo "Could not find configured git repository. Have you configured splunkgit.conf? Read README.md for more information." 1>&2
-else
-  if [ -d "$chosen_repository" ]; then
-    print_hashes_and_git_log_numstat
+for repository in `splunk cmd python $SCRIPT_HOME/splunkgit_settings.py`
+do
+  GIT_REPO=$repository
+  GIT_REPO_FOLDER=`echo $GIT_REPO | sed 's/.*\///'`
+  GIT_REPOS_HOME=$APP_HOME/git-repositories
+  chosen_repository=$GIT_REPOS_HOME/$GIT_REPO_FOLDER
+
+  if [ "$GIT_REPO" = "" ]; then
+    echo "Could not find configured git repository. Have you configured splunkgit.conf? Read README.md for more information." 1>&2
   else
-    #TODO Handle this
-    echo "repository does not exist!" 1>&2
-    fetch_git_repository
+    if [ -d "$chosen_repository" ]; then
+      print_hashes_and_git_log_numstat
+    else
+      echo "repository does not exist!" 1>&2
+      fetch_git_repository
+    fi
   fi
-fi
+done
 }
 
 #Not safe to run this method parallel from the same directory, since the $numstat_file is touched, written to and deleted.
@@ -49,8 +56,7 @@ print_hashes_and_git_log_numstat ()
 {
   cd $chosen_repository
   git fetch 1>&2
-
-  NUMBER_OF_COMMITS_TO_SKIP=`splunk search "index=splunkgit | stats dc(commit_hash) as commitCount" -auth admin:changeme -app $APP_NAME | grep -o -P '[0-9]+'`
+  NUMBER_OF_COMMITS_TO_SKIP=`splunk search "index=splunkgit repository=$GIT_REPO | stats dc(commit_hash) as commitCount" -auth admin:changeme -app $APP_NAME | grep -o -P '[0-9]+'`
 
 #For each commit in the repository do:
 #if commit doesn't have edited lines, just print 'time, author_name, author_mail, commit...'
