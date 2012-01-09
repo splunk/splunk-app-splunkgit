@@ -78,7 +78,7 @@ def splunk_user_name():
 def splunk_password():
     return SPLUNK_SETTINGS['password']
 
-def github_user_repos():
+def github_repositories():
     space_separated_repo_addresses = git_repo_addresses()
     repo_addresses = space_separated_repo_addresses.split(' ')
     return github_repos_from_repo_addresses(repo_addresses)

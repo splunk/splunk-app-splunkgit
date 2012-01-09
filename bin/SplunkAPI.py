@@ -24,22 +24,18 @@ import splunk.search as search
 from GithubAPI import GithubAPI
 import time
 
-from splunkgit_settings import github_repo_name, github_user_login_name
-
-GITHUB_USER = github_user_login_name()
-GITHUB_REPO = github_repo_name()
-
 class SplunkAPI(object):
 
     def __init__(self, username, password):
         splunk.auth.getSessionKey(username, password)
     
-    def time_of_last_updated_issue(self):
-        last_updated_issue_search = self._search_for_last_updated_issue()
+    def time_of_last_updated_issue(self, repository):
+        last_updated_issue_search = self._search_for_last_updated_issue(repository)
         return self._get_update_time_from_search(last_updated_issue_search)
         
-    def _search_for_last_updated_issue(self):
-        issue_search = search.dispatch('search index=splunkgit sourcetype="github_data" github_issue_update_time=* | sort -str(github_issue_update_time) | head 1')
+    def _search_for_last_updated_issue(self, repository):
+        search_string = 'search index=splunkgit sourcetype="github_data" repository=%s github_issue_update_time=* | sort -str(github_issue_update_time) | head 1' % repository
+        issue_search = search.dispatch(search_string)
         while not issue_search.isDone:
             time.sleep(0.5) #for a while
         return issue_search
