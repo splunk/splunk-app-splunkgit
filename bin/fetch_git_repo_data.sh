@@ -28,8 +28,12 @@ GIT_REPO_FOLDER=
 GIT_REPOS_HOME=
 chosen_repository=
 
+#XML writing for a view that views all repositories
+xml_file=$APP_HOME/local/data/ui/views/multi_repositories.xml
+
 main ()
 {
+setup_xml
 for repository in `splunk cmd python $SCRIPT_HOME/splunkgit_settings.py`
 do
   GIT_REPO=$repository
@@ -47,7 +51,26 @@ do
       fetch_git_repository
     fi
   fi
+  write_xml $repository
 done
+end_xml
+}
+
+setup_xml () {
+  # Create xml file
+  echo "<?xml version='1.0' encoding='utf-8'?>" > $xml_file
+  echo "<dashboard>" >> $xml_file
+  echo "  <label>Repositories</label>" >> $xml_file
+}
+
+# Write multi_repositories_row.txt and replace ---REPOSITORY--- with $1, which should be a repository
+write_xml () {
+  repository=$1
+  cat $APP_HOME/bin/multi_repositories_row.txt | sed "s,---REPOSITORY---,$1," >> $xml_file
+}
+
+end_xml () {
+  echo "</dashboard>" >> $xml_file
 }
 
 #Not safe to run this method parallel from the same directory, since the $numstat_file is touched, written to and deleted.
