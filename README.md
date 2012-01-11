@@ -71,7 +71,7 @@ Getting started
 - Goto `<SPLUNK_ROOT>`: `cd <SPLUNK_ROOT>`
 - Start splunk `bin/splunk start`
     - On you web browser goto `http://localhost:8000`
-    - If asked enter your name and user name (default value is **admin:password**)
+    - If asked enter your name and user name (default value is **admin:changeme**)
     - If you change the password, you also need the change the configuration file to match this.
 - Stop splunk: `bin/splunk stop`
 
