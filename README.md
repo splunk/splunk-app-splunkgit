@@ -12,6 +12,9 @@ Stuff in this repository are mentioned on a four part blog series.
 - [part 3](http://blogs.splunk.com/2011/11/17/splunkgit-part-3)
 - [part 4](http://blogs.splunk.com/2011/11/18/splunkgit-part-4)
 
+Released v1.1! (01/10/2012)
+- You can now watch multiple repositories
+
 Getting started
 ---------------
 
@@ -49,6 +52,9 @@ Getting started
     - `repo_name=` The name of the github repo. Ex: `splunk-app-splunkgit`
     - `user=` Splunk user login so our scripts can search in Splunk
     - `password=` Splunk password for the user
+
+#### Configurating multiple repositories
+- Edit local/splunkgit.conf and assign `repo_addresses=` with multiple repositories by separating the repositories with a space. Ex: `repo_address=git://github.com/splunk/splunk-app-splunkgit.git git://github.com/splunk/splunk-sdk-java.git git://github.com/splunk/splunk-sdk-python.git`
 
 ### Changing repository
 
