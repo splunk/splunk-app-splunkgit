@@ -34,7 +34,8 @@ GIT_REPOS_HOME=
 chosen_repository=
 
 #XML writing for a view that views all repositories
-xml_file=$APP_HOME/local/data/ui/views/multi_repositories.xml
+xml_dir=$APP_HOME/local/data/ui/views
+xml_file=$xml_dir/multi_repositories.xml
 
 main ()
 {
@@ -64,6 +65,7 @@ end_xml
 
 setup_xml () {
   # Create xml file
+  mkdir -p $xml_dir
   echo "<?xml version='1.0' encoding='utf-8'?>" > $xml_file
   echo "<dashboard>" >> $xml_file
   echo "  <label>Repositories</label>" >> $xml_file
