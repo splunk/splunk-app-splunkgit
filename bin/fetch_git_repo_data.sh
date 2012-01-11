@@ -41,6 +41,7 @@ main ()
 setup_xml
 for repository in `splunk cmd python $SCRIPT_HOME/splunkgit_settings.py`
 do
+  echo "fetching git repo data for repository: $repository" 1>&2
   GIT_REPO=$repository
   GIT_REPO_FOLDER=`echo $GIT_REPO | sed 's/.*\///'`
   GIT_REPOS_HOME=$APP_HOME/git-repositories
@@ -71,7 +72,7 @@ setup_xml () {
 # Write multi_repositories_row.txt and replace ---REPOSITORY--- with $1, which should be a repository
 write_xml () {
   repository=$1
-  cat $APP_HOME/bin/multi_repositories_row.txt | sed "s,---REPOSITORY---,$1," >> $xml_file
+  cat $APP_HOME/bin/multi_repositories_row.txt | sed "s,---REPOSITORY---,$repository," >> $xml_file
 }
 
 end_xml () {
