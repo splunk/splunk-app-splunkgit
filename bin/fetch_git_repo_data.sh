@@ -72,7 +72,8 @@ setup_xml () {
 # Write multi_repositories_row.txt and replace ---REPOSITORY--- with $1, which should be a repository
 write_xml () {
   repository=$1
-  cat $APP_HOME/bin/multi_repositories_row.txt | sed "s,---REPOSITORY---,$repository," >> $xml_file
+  repository_simple_name=`echo $repository | sed 's/.*\///' | sed 's,\.git,,'`
+  cat $APP_HOME/bin/multi_repositories_row.txt | sed "s,---REPOSITORY---,$repository," | sed "s,---REPOSITORY_SIMPLE_NAME---,$repository_simple_name,"  >> $xml_file
 }
 
 end_xml () {
