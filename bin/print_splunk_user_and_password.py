@@ -12,14 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Separate repo_addresses with a space to have multiple repositories indexed
-[git]
-repo_addresses=git://github.com/splunk/splunk-app-splunkgit.git
+'''
+Prints the username and password configured in splunkgit.conf.
+Author: Emre Berge Ergenekon, Petter Eriksson
+'''
 
-[github]
-user_login_name=
-repo_name=
+import splunkgit_settings
 
-[splunk]
-user=
-password=
+SEPARATOR = ":"
+
+if __name__ == '__main__':
+    print splunkgit_settings.splunk_user_name() + SEPARATOR + splunkgit_settings.splunk_password()

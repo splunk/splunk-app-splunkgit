@@ -23,4 +23,7 @@ limitations under the License.
     <collection label="Git">
         <view source="all" match="git_"/>
     </collection>
+    <collection label="Multi-Git">
+        <view source="all" match="multi_"/>
+    </collection>
 </nav>

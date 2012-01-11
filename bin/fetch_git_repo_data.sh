@@ -21,26 +21,67 @@
 SCRIPT_HOME=$(dirname $0)
 APP_HOME=`splunk cmd ./$SCRIPT_HOME/app_home.sh`
 APP_NAME=`echo $APP_HOME | sed 's/.*\///'`
-GIT_REPO=`splunk cmd python $SCRIPT_HOME/splunkgit_settings.py`
-GIT_REPO_FOLDER=`echo $GIT_REPO | sed 's/.*\///'`
-GIT_REPOS_HOME=$APP_HOME/git-repositories
-chosen_repository=$GIT_REPOS_HOME/$GIT_REPO_FOLDER
 
-#echo $chosen_repository
+# Splunk authentication
+username_password_script="splunk cmd python $SCRIPT_HOME/print_splunk_user_and_password.py"
+SPLUNK_USERNAME=`$username_password_script | grep -oP '^[^:]+'`
+SPLUNK_PASSWORD=`$username_password_script | grep -oP '(?<=:)(.*)'`
+
+#Initializing
+GIT_REPO=
+GIT_REPO_FOLDER=
+GIT_REPOS_HOME=
+chosen_repository=
+
+#XML writing for a view that views all repositories
+xml_dir=$APP_HOME/local/data/ui/views
+xml_file=$xml_dir/multi_repositories.xml
 
 main ()
 {
-if [ "$GIT_REPO" = "" ]; then
-  echo "Could not find configured git repository. Have you configured splunkgit.conf? Read README.md for more information." 1>&2
-else
-  if [ -d "$chosen_repository" ]; then
-    print_hashes_and_git_log_numstat
+setup_xml
+for repository in `splunk cmd python $SCRIPT_HOME/splunkgit_settings.py`
+do
+  echo "fetching git repo data for repository: $repository" 1>&2
+  GIT_REPO=$repository
+  GIT_REPO_FOLDER=`echo $GIT_REPO | sed 's/.*\///'`
+  GIT_REPOS_HOME=$APP_HOME/git-repositories
+  chosen_repository=$GIT_REPOS_HOME/$GIT_REPO_FOLDER
+
+  if [ "$GIT_REPO" = "" ]; then
+    echo "Could not find configured git repository. Have you configured splunkgit.conf? Read README.md for more information." 1>&2
   else
-    #TODO Handle this
-    echo "repository does not exist!" 1>&2
-    fetch_git_repository
+    if [ -d "$chosen_repository" ]; then
+      print_hashes_and_git_log_numstat
+    else
+      echo "repository does not exist!" 1>&2
+      fetch_git_repository
+    fi
   fi
-fi
+  write_xml $repository
+done
+end_xml
+}
+
+setup_xml () {
+  # Create xml file
+  mkdir -p $xml_dir
+  echo "<?xml version='1.0' encoding='utf-8'?>" > $xml_file
+  echo "<dashboard>" >> $xml_file
+  echo "  <label>Repositories</label>" >> $xml_file
+}
+
+# Write multi_repositories_row.txt and replace ---REPOSITORY--- with $1, which should be a repository
+write_xml () {
+  repository=$1
+  repository_simple_name=`echo $repository | sed 's/.*\///' | sed 's,\.git,,'`
+  cat $APP_HOME/bin/multi_repositories_row.txt | sed "s,---REPOSITORY---,$repository," | sed "s,---REPOSITORY_SIMPLE_NAME---,$repository_simple_name,"  >> $xml_file
+}
+
+end_xml () {
+  echo "</dashboard>" >> $xml_file
+# Reload views for $APP_NAME (splunkgit)
+  curl -s -u $SPLUNK_USERNAME:$SPLUNK_PASSWORD -k https://localhost:8089/servicesNS/nobody/$APP_NAME/data/ui/views/_reload > /dev/null
 }
 
 #Not safe to run this method parallel from the same directory, since the $numstat_file is touched, written to and deleted.
@@ -49,8 +90,7 @@ print_hashes_and_git_log_numstat ()
 {
   cd $chosen_repository
   git fetch 1>&2
-
-  NUMBER_OF_COMMITS_TO_SKIP=`splunk search "index=splunkgit | stats dc(commit_hash) as commitCount" -auth admin:changeme -app $APP_NAME | grep -o -P '[0-9]+'`
+  NUMBER_OF_COMMITS_TO_SKIP=`splunk search "index=splunkgit repository=$GIT_REPO | stats dc(commit_hash) as commitCount" -auth admin:changeme -app $APP_NAME | grep -o -P '[0-9]+'`
 
 #For each commit in the repository do:
 #if commit doesn't have edited lines, just print 'time, author_name, author_mail, commit...'

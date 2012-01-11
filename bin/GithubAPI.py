@@ -54,8 +54,12 @@ class GithubAPI(object):
         return self.make_request('forks')
     
     def repo(self):
-        return self.make_request('')[0]
-    
+        request = self.make_request('')
+        if request:
+            return request[0]
+        else:
+            return None
+
     def make_request(self, partial_url):
         http = self._get_http()
         next_url = self._create_full_api_url(partial_url)

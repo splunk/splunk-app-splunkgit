@@ -12,6 +12,9 @@ Stuff in this repository are mentioned on a four part blog series.
 - [part 3](http://blogs.splunk.com/2011/11/17/splunkgit-part-3)
 - [part 4](http://blogs.splunk.com/2011/11/18/splunkgit-part-4)
 
+Released v1.1! (01/10/2012)
+- You can now watch multiple repositories
+
 Getting started
 ---------------
 
@@ -44,11 +47,14 @@ Getting started
 - Open Terminal app
 - Goto `<SPLUNK_ROOT>/etc/apps/splunk-app-aplunkgit`
 - Edit local/splunkgit.conf with a text editor (`open -e local/splunkgit.conf`) and assign the following values:
-    - `repo_address=` The address to the repo, use the read-only address. Ex: `git://github.com/splunk/splunk-app-splunkgit.git`
+    - `repo_addresses=` The addresses to the repos, use the read-only address. Ex: `git://github.com/splunk/splunk-app-splunkgit.git`. You can have one or multiple repositories, space separated
     - `user_login_name=` The login name of the repo owner in github. Ex: `splunk`
     - `repo_name=` The name of the github repo. Ex: `splunk-app-splunkgit`
     - `user=` Splunk user login so our scripts can search in Splunk
     - `password=` Splunk password for the user
+
+#### Configurating multiple repositories
+- Edit local/splunkgit.conf and assign `repo_addresses=` with multiple repositories by separating the repositories with a space. Ex: `repo_address=git://github.com/splunk/splunk-app-splunkgit.git git://github.com/splunk/splunk-sdk-java.git git://github.com/splunk/splunk-sdk-python.git`
 
 ### Changing repository
 
@@ -65,7 +71,7 @@ Getting started
 - Goto `<SPLUNK_ROOT>`: `cd <SPLUNK_ROOT>`
 - Start splunk `bin/splunk start`
     - On you web browser goto `http://localhost:8000`
-    - If asked enter your name and user name (default value is **admin:password**)
+    - If asked enter your name and user name (default value is **admin:changeme**)
     - If you change the password, you also need the change the configuration file to match this.
 - Stop splunk: `bin/splunk stop`
 

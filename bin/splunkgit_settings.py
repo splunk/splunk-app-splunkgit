@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import splunk.clilib.cli_common
+import re
 
 '''
 Functions for retriveing settigs from splunkgit conf file.
@@ -22,8 +23,48 @@ SPLUNKGIT_GIT_SETTINGS = splunk.clilib.cli_common.getConfStanza('splunkgit','git
 SPLUNKGIT_GITHUB_SETTINGS = splunk.clilib.cli_common.getConfStanza('splunkgit','github')
 SPLUNK_SETTINGS = splunk.clilib.cli_common.getConfStanza('splunkgit','splunk')
 
-def git_repo_address():
-    return SPLUNKGIT_GIT_SETTINGS['repo_address']
+class GithubRepository(object):
+
+    def __init__(self, repo_address, user, repo):
+        self._repo_address = repo_address
+        self._user = user
+        self._repo = repo
+
+    def get_repo_address(self):
+        return self._repo_address
+
+    def get_user(self):
+        return self._user
+
+    def get_repo(self):
+        return self._repo
+
+    @classmethod
+    def new_from_repo_address(cls, repo_address):
+        user = GithubRepository.get_user_from_repo_address(repo_address)
+        repo = GithubRepository.get_repo_from_repo_address(repo_address, user)
+        if user is None or repo is None:
+            return None
+        return GithubRepository(repo_address, user, repo)
+
+    @classmethod
+    def get_user_from_repo_address(cls, repo_address):
+        user_match = re.search('(?<=github\.com.)(.*)(?=/)', repo_address) # match anything after github.com until /
+        if user_match is not None:
+                return user_match.group(0)
+        else:
+            return None
+
+    @classmethod
+    def get_repo_from_repo_address(cls, repo_address, user):
+        repo_match = re.search("(?<=%s/)(.*)(?=\.git)" % user, repo_address) # match <something>.git after user/
+        if repo_match is not None:
+            return repo_match.group(0)
+        else:
+            return None
+
+def git_repo_addresses():
+    return SPLUNKGIT_GIT_SETTINGS['repo_addresses']
 
 def github_user_login_name():
     return SPLUNKGIT_GITHUB_SETTINGS['user_login_name']
@@ -37,5 +78,18 @@ def splunk_user_name():
 def splunk_password():
     return SPLUNK_SETTINGS['password']
 
+def github_repositories():
+    space_separated_repo_addresses = git_repo_addresses()
+    repo_addresses = space_separated_repo_addresses.split(' ')
+    return github_repos_from_repo_addresses(repo_addresses)
+
+def github_repos_from_repo_addresses(repo_addresses):
+    github_repos = []
+    for repo_address in repo_addresses:
+        github_repo = GithubRepository.new_from_repo_address(repo_address)
+        if github_repo is not None:
+            github_repos.append(github_repo)
+    return github_repos
+
 if __name__ == '__main__':
-    print git_repo_address()
+    print git_repo_addresses()
