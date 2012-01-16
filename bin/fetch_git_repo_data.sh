@@ -19,7 +19,8 @@
 
 #Global variables
 SCRIPT_HOME=$(dirname $0)
-APP_HOME=`splunk cmd ./$SCRIPT_HOME/app_home.sh`
+SPLUNK=$SPLUNK_HOME/bin/splunk
+APP_HOME=`$SPLUNK cmd ./$SCRIPT_HOME/app_home.sh`
 APP_NAME=`echo $APP_HOME | sed 's/.*\///'`
 
 #Initializing
@@ -30,7 +31,7 @@ chosen_repository=
 
 main ()
 {
-for repository in `splunk cmd python $SCRIPT_HOME/splunkgit_settings.py`
+for repository in `$SPLUNK cmd python $SCRIPT_HOME/splunkgit_settings.py`
 do
   echo "fetching git repo data for repository: $repository" 1>&2
   GIT_REPO=$repository
@@ -57,7 +58,7 @@ print_hashes_and_git_log_numstat ()
 {
   cd $chosen_repository
   git fetch 1>&2
-  NUMBER_OF_COMMITS_TO_SKIP=`splunk search "index=splunkgit repository=$GIT_REPO | stats dc(commit_hash) as commitCount" -auth admin:changeme -app $APP_NAME | grep -o -P '[0-9]+'`
+  NUMBER_OF_COMMITS_TO_SKIP=`$SPLUNK search "index=splunkgit repository=$GIT_REPO | stats dc(commit_hash) as commitCount" -auth admin:changeme -app $APP_NAME | grep -o -P '[0-9]+'`
 
 #For each commit in the repository do:
 #if commit doesn't have edited lines, just print 'time, author_name, author_mail, commit...'
