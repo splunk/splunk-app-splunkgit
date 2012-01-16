@@ -22,11 +22,6 @@ SCRIPT_HOME=$(dirname $0)
 SPLUNK=$SPLUNK_HOME/bin/splunk
 APP_HOME=`$SPLUNK cmd ./$SCRIPT_HOME/app_home.sh`
 
-# Splunk authentication
-username_password_script="$SPLUNK cmd python $SCRIPT_HOME/print_splunk_user_and_password.py"
-SPLUNK_USERNAME=`$username_password_script | grep -oP '^[^:]+'`
-SPLUNK_PASSWORD=`$username_password_script | grep -oP '(?<=:)(.*)'`
-
 #XML writing for a view that views all repositories
 xml_dir=$APP_HOME/local/data/ui/views
 xml_file=$xml_dir/multi_repositories.xml
@@ -39,6 +34,7 @@ main ()
     write_xml $repository
   done
   end_xml
+  reload_views_for_splunkgit
 }
 
 setup_xml () {
@@ -59,8 +55,17 @@ write_xml () {
 
 end_xml () {
   echo "</dashboard>" >> $xml_file
+}
+
+reload_views_for_splunkgit () {
+  # Splunk variables
+  username_password_script="$SPLUNK cmd python $SCRIPT_HOME/print_splunk_user_and_password.py"
+  SPLUNK_USERNAME=`$username_password_script | grep -oP '^[^:]+'`
+  SPLUNK_PASSWORD=`$username_password_script | grep -oP '(?<=:)(.*)'`
+  SPLUNKD_PORT=`$SPLUNK show splunkd-port | grep -oP '\d+?$'`
+
   # Reload views for $APP_NAME (splunkgit)
-  curl -s -u $SPLUNK_USERNAME:$SPLUNK_PASSWORD -k https://localhost:8089/servicesNS/nobody/$APP_NAME/data/ui/views/_reload > /dev/null
+  curl -s -u $SPLUNK_USERNAME:$SPLUNK_PASSWORD -k https://localhost:$SPLUNKD_PORT/servicesNS/nobody/$APP_NAME/data/ui/views/_reload > /dev/null
 }
 
 # Run script
