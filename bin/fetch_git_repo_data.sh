@@ -29,6 +29,11 @@ GIT_REPO_FOLDER=
 GIT_REPOS_HOME=
 chosen_repository=
 
+# Splunk variables
+username_password_script="$SPLUNK cmd python $SCRIPT_HOME/print_splunk_user_and_password.py"
+SPLUNK_USERNAME=`$username_password_script | grep -oP '^[^:]+'`
+SPLUNK_PASSWORD=`$username_password_script | grep -oP '(?<=:)(.*)'`
+
 main ()
 {
 for repository in `$SPLUNK cmd python $SCRIPT_HOME/splunkgit_settings.py`
@@ -59,11 +64,11 @@ print_hashes_and_git_log_numstat ()
   cd $chosen_repository
   git fetch 1>&2
 
-# Find the last indexed commit. If there are no indexed commits, get the
-# first commit of the repository.
+# Find the last indexed commit.
+# If there are no indexed commits, get the first commit of the repository.
   SINCE_COMMIT=""
 
-  HAS_INDEXED_COMMITS=`$SPLUNK search "index=splunkgit repository=$GIT_REPO sourcetype=git_file_change | head 1 | stats count" -auth admin:changeme -app $APP_NAME | grep -oP '\d+'`
+  HAS_INDEXED_COMMITS=`$SPLUNK search "index=splunkgit repository=$GIT_REPO sourcetype=git_file_change | head 1 | stats count" -auth $SPLUNK_USERNAME:$SPLUNK_PASSWORD -app $APP_NAME | grep -oP '\d+'`
   if [ "$HAS_INDEXED_COMMITS" = "0" ]; then
     FIRST_COMMIT=`git log --all --no-color --no-renames --no-merges --reverse --pretty=format:'%H' | head -n 1`
     SINCE_COMMIT=$FIRST_COMMIT
