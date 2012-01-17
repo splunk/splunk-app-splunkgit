@@ -12,8 +12,10 @@ Stuff in this repository are mentioned on a four part blog series.
 - [part 3](http://blogs.splunk.com/2011/11/17/splunkgit-part-3)
 - [part 4](http://blogs.splunk.com/2011/11/18/splunkgit-part-4)
 
-Released v1.1! (01/10/2012)
-- You can now watch multiple repositories
+Released v1.2! (01/16/2012)
+- You can now watch multiple repositories in semi real-time!
+- Less configuration
+- Faster updating scripts
 
 Getting started
 ---------------
@@ -48,13 +50,15 @@ Getting started
 - Goto `<SPLUNK_ROOT>/etc/apps/splunk-app-aplunkgit`
 - Edit local/splunkgit.conf with a text editor (`open -e local/splunkgit.conf`) and assign the following values:
     - `repo_addresses=` The addresses to the repos, use the read-only address. Ex: `git://github.com/splunk/splunk-app-splunkgit.git`. You can have one or multiple repositories, space separated
-    - `user_login_name=` The login name of the repo owner in github. Ex: `splunk`
-    - `repo_name=` The name of the github repo. Ex: `splunk-app-splunkgit`
     - `user=` Splunk user login so our scripts can search in Splunk
     - `password=` Splunk password for the user
 
-#### Configurating multiple repositories
+#### Configurating multiple repositories in semi real-time
 - Edit local/splunkgit.conf and assign `repo_addresses=` with multiple repositories by separating the repositories with a space. Ex: `repo_address=git://github.com/splunk/splunk-app-splunkgit.git git://github.com/splunk/splunk-sdk-java.git git://github.com/splunk/splunk-sdk-python.git`
+
+- Copy default/inputs.conf to the local directory
+- Set the interval value of the fetch_git_repo_data.sh script to a low value. Ex: 20
+The git repositores will now be updated each 20 seconds. The views in multiple repositories dashboard will be updated whenever there's more data.
 
 ### Changing repository
 
