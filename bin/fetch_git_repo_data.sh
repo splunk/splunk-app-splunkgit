@@ -58,14 +58,31 @@ print_hashes_and_git_log_numstat ()
 {
   cd $chosen_repository
   git fetch 1>&2
-  NUMBER_OF_COMMITS_TO_SKIP=`$SPLUNK search "index=splunkgit repository=$GIT_REPO | stats dc(commit_hash) as commitCount" -auth admin:changeme -app $APP_NAME | grep -o -P '[0-9]+'`
+
+# Find the last indexed commit. If there are no indexed commits, get the
+# first commit of the repository.
+  SINCE_COMMIT=""
+
+  NUMBER_OF_COMMITS=`$SPLUNK search "index=splunkgit repository=$GIT_REPO | stats dc(commit_hash) as commitCount" -auth admin:changeme -app $APP_NAME | grep -o -P '[0-9]+'`
+  if [ "$NUMBER_OF_COMMITS" = "0" ]; then
+    FIRST_COMMIT=`git log --all --no-color --no-renames --no-merges --reverse --pretty=format:'%H' | head -n 1`
+    SINCE_COMMIT=$FIRST_COMMIT
+  else
+    LATEST_INDEXED_COMMIT=`$SPLUNK search "index=splunkgit repository=$GIT_REPO sourcetype="git_file_change" | sort 1 - _time | table commit_hash" -auth admin:changeme -app $APP_NAME | grep -oP '^\w+'`
+    SINCE_COMMIT=$LATEST_INDEXED_COMMIT
+  fi
+
+# Get the time of the commit we are logging since.
+# Note: We're getting the time, so we can specify the --since flag to git log.
+#       Otherwise, we can get commits that were made earlier than we would have wanted.
+UNIX_TIME_OF_SINCE_COMMIT=`git log $SINCE_COMMIT -n 1 --pretty=format:'%ct'`
 
 #For each commit in the repository do:
 #if commit doesn't have edited lines, just print 'time, author_name, author_mail, commit...'
 #else
 #for each file change in commit do:
 #print commit info in front of every file change.
-  git log --pretty=format:'[%ci] author_name="%an" author_mail="%ae" commit_hash="%H" parrent_hash="%P" tree_hash="%T"' --numstat --all --no-color --no-renames --no-merges --skip=$NUMBER_OF_COMMITS_TO_SKIP | sed '/^$/d' | awk -F \t -v FIRST_LINE=1 -v REPO="$GIT_REPO" -v RECENT_COMMIT=0 '{IS_COMMIT = match($0, /^\[/); if (IS_COMMIT) { if (RECENT_COMMIT==1) {print COMMIT_INFO } RECENT_COMMIT=1; COMMIT_INFO=$0} else {RECENT_COMMIT=0; print COMMIT_INFO" insertions=\""$1"\" deletions=\""$2"\" path=\""$3"\" file_type=\"---/"$3"---\" repository=\""REPO"\""}}' | perl -pe 's|---.*/(.+?)---|---\.\1---|' | perl -pe 's|---.*\.(.+?)---|\1|'
+  git log --pretty=format:'[%ci] author_name="%an" author_mail="%ae" commit_hash="%H" parrent_hash="%P" tree_hash="%T"' --numstat --all --no-color --no-renames --no-merges --since=$UNIX_TIME_OF_SINCE_COMMIT $SINCE_COMMIT.. | sed '/^$/d' | awk -F \t -v FIRST_LINE=1 -v REPO="$GIT_REPO" -v RECENT_COMMIT=0 '{IS_COMMIT = match($0, /^\[/); if (IS_COMMIT) { if (RECENT_COMMIT==1) {print COMMIT_INFO } RECENT_COMMIT=1; COMMIT_INFO=$0} else {RECENT_COMMIT=0; print COMMIT_INFO" insertions=\""$1"\" deletions=\""$2"\" path=\""$3"\" file_type=\"---/"$3"---\" repository=\""REPO"\""}}' | perl -pe 's|---.*/(.+?)---|---\.\1---|' | perl -pe 's|---.*\.(.+?)---|\1|'
 }
 
 fetch_git_repository ()
