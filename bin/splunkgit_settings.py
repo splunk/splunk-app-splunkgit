@@ -20,7 +20,6 @@ Functions for retriveing settigs from splunkgit conf file.
 Author: Emre Berge Ergenekon, Petter Eriksson
 '''
 SPLUNKGIT_GIT_SETTINGS = splunk.clilib.cli_common.getConfStanza('splunkgit','git')
-SPLUNKGIT_GITHUB_SETTINGS = splunk.clilib.cli_common.getConfStanza('splunkgit','github')
 SPLUNK_SETTINGS = splunk.clilib.cli_common.getConfStanza('splunkgit','splunk')
 
 class GithubRepository(object):
@@ -65,12 +64,6 @@ class GithubRepository(object):
 
 def git_repo_addresses():
     return SPLUNKGIT_GIT_SETTINGS['repo_addresses']
-
-def github_user_login_name():
-    return SPLUNKGIT_GITHUB_SETTINGS['user_login_name']
-
-def github_repo_name():
-    return SPLUNKGIT_GITHUB_SETTINGS['repo_name']
 
 def splunk_user_name():
     return SPLUNK_SETTINGS['user']

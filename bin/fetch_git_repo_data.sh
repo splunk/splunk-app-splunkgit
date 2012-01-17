@@ -19,13 +19,9 @@
 
 #Global variables
 SCRIPT_HOME=$(dirname $0)
-APP_HOME=`splunk cmd ./$SCRIPT_HOME/app_home.sh`
+SPLUNK=$SPLUNK_HOME/bin/splunk
+APP_HOME=`$SPLUNK cmd ./$SCRIPT_HOME/app_home.sh`
 APP_NAME=`echo $APP_HOME | sed 's/.*\///'`
-
-# Splunk authentication
-username_password_script="splunk cmd python $SCRIPT_HOME/print_splunk_user_and_password.py"
-SPLUNK_USERNAME=`$username_password_script | grep -oP '^[^:]+'`
-SPLUNK_PASSWORD=`$username_password_script | grep -oP '(?<=:)(.*)'`
 
 #Initializing
 GIT_REPO=
@@ -33,14 +29,14 @@ GIT_REPO_FOLDER=
 GIT_REPOS_HOME=
 chosen_repository=
 
-#XML writing for a view that views all repositories
-xml_dir=$APP_HOME/local/data/ui/views
-xml_file=$xml_dir/multi_repositories.xml
+# Splunk variables
+username_password_script="$SPLUNK cmd python $SCRIPT_HOME/print_splunk_user_and_password.py"
+SPLUNK_USERNAME=`$username_password_script | grep -oP '^[^:]+'`
+SPLUNK_PASSWORD=`$username_password_script | grep -oP '(?<=:)(.*)'`
 
 main ()
 {
-setup_xml
-for repository in `splunk cmd python $SCRIPT_HOME/splunkgit_settings.py`
+for repository in `$SPLUNK cmd python $SCRIPT_HOME/splunkgit_settings.py`
 do
   echo "fetching git repo data for repository: $repository" 1>&2
   GIT_REPO=$repository
@@ -58,30 +54,7 @@ do
       fetch_git_repository
     fi
   fi
-  write_xml $repository
 done
-end_xml
-}
-
-setup_xml () {
-  # Create xml file
-  mkdir -p $xml_dir
-  echo "<?xml version='1.0' encoding='utf-8'?>" > $xml_file
-  echo "<dashboard>" >> $xml_file
-  echo "  <label>Repositories</label>" >> $xml_file
-}
-
-# Write multi_repositories_row.txt and replace ---REPOSITORY--- with $1, which should be a repository
-write_xml () {
-  repository=$1
-  repository_simple_name=`echo $repository | sed 's/.*\///' | sed 's,\.git,,'`
-  cat $APP_HOME/bin/multi_repositories_row.txt | sed "s,---REPOSITORY---,$repository," | sed "s,---REPOSITORY_SIMPLE_NAME---,$repository_simple_name,"  >> $xml_file
-}
-
-end_xml () {
-  echo "</dashboard>" >> $xml_file
-# Reload views for $APP_NAME (splunkgit)
-  curl -s -u $SPLUNK_USERNAME:$SPLUNK_PASSWORD -k https://localhost:8089/servicesNS/nobody/$APP_NAME/data/ui/views/_reload > /dev/null
 }
 
 #Not safe to run this method parallel from the same directory, since the $numstat_file is touched, written to and deleted.
@@ -90,14 +63,31 @@ print_hashes_and_git_log_numstat ()
 {
   cd $chosen_repository
   git fetch 1>&2
-  NUMBER_OF_COMMITS_TO_SKIP=`splunk search "index=splunkgit repository=$GIT_REPO | stats dc(commit_hash) as commitCount" -auth admin:changeme -app $APP_NAME | grep -o -P '[0-9]+'`
+
+# Find the last indexed commit.
+# If there are no indexed commits, get the first commit of the repository.
+  SINCE_COMMIT=""
+
+  HAS_INDEXED_COMMITS=`$SPLUNK search "index=splunkgit repository=$GIT_REPO sourcetype=git_file_change | head 1 | stats count" -auth $SPLUNK_USERNAME:$SPLUNK_PASSWORD -app $APP_NAME | grep -oP '\d+'`
+  if [ "$HAS_INDEXED_COMMITS" = "0" ]; then
+    FIRST_COMMIT=`git log --all --no-color --no-renames --no-merges --reverse --pretty=format:'%H' | head -n 1`
+    SINCE_COMMIT=$FIRST_COMMIT
+  else
+    LATEST_INDEXED_COMMIT=`$SPLUNK search "index=splunkgit repository=$GIT_REPO sourcetype="git_file_change" | sort 1 - _time | table commit_hash" -auth admin:changeme -app $APP_NAME | grep -oP '^\w+'`
+    SINCE_COMMIT=$LATEST_INDEXED_COMMIT
+  fi
+
+# Get the time of the commit we are logging since.
+# Note: We're getting the time, so we can specify the --since flag to git log.
+#       Otherwise, we can get commits that were made earlier than we would have wanted.
+UNIX_TIME_OF_SINCE_COMMIT=`git log $SINCE_COMMIT -n 1 --pretty=format:'%ct'`
 
 #For each commit in the repository do:
 #if commit doesn't have edited lines, just print 'time, author_name, author_mail, commit...'
 #else
 #for each file change in commit do:
 #print commit info in front of every file change.
-  git log --pretty=format:'[%ci] author_name="%an" author_mail="%ae" commit_hash="%H" parrent_hash="%P" tree_hash="%T"' --numstat --all --no-color --no-renames --no-merges --skip=$NUMBER_OF_COMMITS_TO_SKIP | sed '/^$/d' | awk -F \t -v FIRST_LINE=1 -v REPO="$GIT_REPO" -v RECENT_COMMIT=0 '{IS_COMMIT = match($0, /^\[/); if (IS_COMMIT) { if (RECENT_COMMIT==1) {print COMMIT_INFO } RECENT_COMMIT=1; COMMIT_INFO=$0} else {RECENT_COMMIT=0; print COMMIT_INFO" insertions=\""$1"\" deletions=\""$2"\" path=\""$3"\" file_type=\"---/"$3"---\" repository=\""REPO"\""}}' | perl -pe 's|---.*/(.+?)---|---\.\1---|' | perl -pe 's|---.*\.(.+?)---|\1|'
+  git log --pretty=format:'[%ci] author_name="%an" author_mail="%ae" commit_hash="%H" parrent_hash="%P" tree_hash="%T"' --numstat --all --no-color --no-renames --no-merges --since=$UNIX_TIME_OF_SINCE_COMMIT $SINCE_COMMIT.. | sed '/^$/d' | awk -F \t -v FIRST_LINE=1 -v REPO="$GIT_REPO" -v RECENT_COMMIT=0 '{IS_COMMIT = match($0, /^\[/); if (IS_COMMIT) { if (RECENT_COMMIT==1) {print COMMIT_INFO } RECENT_COMMIT=1; COMMIT_INFO=$0} else {RECENT_COMMIT=0; print COMMIT_INFO" insertions=\""$1"\" deletions=\""$2"\" path=\""$3"\" file_type=\"---/"$3"---\" repository=\""REPO"\""}}' | perl -pe 's|---.*/(.+?)---|---\.\1---|' | perl -pe 's|---.*\.(.+?)---|\1|'
 }
 
 fetch_git_repository ()
