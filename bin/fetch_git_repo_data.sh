@@ -63,8 +63,8 @@ print_hashes_and_git_log_numstat ()
 # first commit of the repository.
   SINCE_COMMIT=""
 
-  NUMBER_OF_COMMITS=`$SPLUNK search "index=splunkgit repository=$GIT_REPO | stats dc(commit_hash) as commitCount" -auth admin:changeme -app $APP_NAME | grep -o -P '[0-9]+'`
-  if [ "$NUMBER_OF_COMMITS" = "0" ]; then
+  HAS_INDEXED_COMMITS=`$SPLUNK search "index=splunkgit repository=$GIT_REPO sourcetype=git_file_change | head 1 | stats count" -auth admin:changeme -app $APP_NAME | grep -oP '\d+'`
+  if [ "$HAS_INDEXED_COMMITS" = "0" ]; then
     FIRST_COMMIT=`git log --all --no-color --no-renames --no-merges --reverse --pretty=format:'%H' | head -n 1`
     SINCE_COMMIT=$FIRST_COMMIT
   else
