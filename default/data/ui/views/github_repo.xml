@@ -34,7 +34,6 @@ limitations under the License.
       <option name="charting.chart">line</option>
       <option name="charting.axisTitleX.text">Time</option>
       <option name="charting.axisTitleY.text">Number of watchers</option>
-      <option name="charting.axisY">numeric</option>
       <option name="charting.chart.nullValueMode">connect</option>
       <option name="charting.axisLabelsY.integerUnits">false</option>
       <option name="charting.axisY.includeZero">false</option>
