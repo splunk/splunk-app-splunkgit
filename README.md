@@ -12,6 +12,10 @@ Stuff in this repository are mentioned on a four part blog series.
 - [part 3](http://blogs.splunk.com/2011/11/17/splunkgit-part-3)
 - [part 4](http://blogs.splunk.com/2011/11/18/splunkgit-part-4)
 
+Released v1.2.1! (02/15/2012)
+- All repositories are now non-flash, aka mobile supported.
+- Increased the days shown in multiple repositories from last 2 weeks to last 30 days.
+
 Released v1.2! (01/16/2012)
 - You can now watch multiple repositories in semi real-time!
 - Less configuration

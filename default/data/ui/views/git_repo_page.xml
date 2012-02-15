@@ -30,7 +30,6 @@ limitations under the License.
       <option name="charting.chart">column</option>
       <option name="charting.axisTitleX.text">Time</option>
       <option name="charting.axisTitleY.text">Number of active authors</option>
-      <option name="charting.axisY">numeric</option>
       <option name="charting.chart.stackMode">stacked</option>
       </chart>
   </row>
@@ -41,7 +40,6 @@ limitations under the License.
       <option name="charting.chart">line</option>
       <option name="charting.axisTitleX.text">Number of commits</option>
       <option name="charting.axisTitleY.text">Number of authors</option>
-      <option name="charting.axisY">numeric</option>
       </chart>
   </row>
   <row>
@@ -51,7 +49,6 @@ limitations under the License.
       <option name="charting.chart">area</option>
       <option name="charting.axisTitleX.text">Time</option>
       <option name="charting.axisTitleY.text">Impact</option>
-      <option name="charting.axisY">numeric</option>
       <option name="charting.axisY.scale">log</option>
       <option name="charting.chart.nullValueMode">zero</option>
       </chart>
@@ -63,7 +60,6 @@ limitations under the License.
       <option name="charting.chart">area</option>
       <option name="charting.axisTitleX.text">Time</option>
       <option name="charting.axisTitleY.text">Number of commits</option>
-      <option name="charting.axisY">numeric</option>
       <option name="charting.chart.stackMode">stacked</option>
       <option name="height">500px</option>
       </chart>
