@@ -1,7 +1,7 @@
 <row>
 <chart>
 <searchString>index=splunkgit source="git_repo" repository=---REPOSITORY--- | dedup commit_hash | timechart count(commit_hash) by author_name | streamstats sum(*) as *</searchString>
-<title>Commits over all time for repository: ---REPOSITORY_SIMPLE_NAME---</title>
+<title>Commits all time: ---REPOSITORY_SIMPLE_NAME---</title>
 <option name="charting.axisTitleX.text">Time</option>
 <option name="charting.axisTitleY.text">Number of commits</option>
 <option name="charting.chart">area</option>
@@ -10,8 +10,8 @@
 </chart>
 <chart>
 <searchString>index=splunkgit source="git_repo" repository=---REPOSITORY--- | dedup commit_hash | timechart count(commit_hash) by author_name | streamstats sum(*) as *</searchString>
-<title>Commits over the last 2 weeks for repository: ---REPOSITORY_SIMPLE_NAME---</title>
-<earliestTime>rt-14d</earliestTime>
+<title>Commmits last 30 days: ---REPOSITORY_SIMPLE_NAME---</title>
+<earliestTime>rt-30d</earliestTime>
 <latestTime>rt</latestTime>
 <option name="charting.axisTitleX.text">Time</option>
 <option name="charting.axisTitleY.text">Number of commits</option>
