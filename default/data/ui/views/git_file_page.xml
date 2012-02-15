@@ -62,7 +62,6 @@ limitations under the License.
       <option name="charting.chart">column</option>
       <option name="charting.axisTitleX.text">Time</option>
       <option name="charting.axisTitleY.text">Commits by author</option>
-      <option name="charting.axisY">numeric</option>
       <option name="charting.chart.stackMode">stacked</option>
     </chart>
   </row>
