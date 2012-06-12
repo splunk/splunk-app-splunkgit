@@ -73,7 +73,7 @@ print_hashes_and_git_log_numstat ()
     FIRST_COMMIT=`git log --all --no-color --no-renames --no-merges --reverse --pretty=format:'%H' | head -n 1`
     SINCE_COMMIT=$FIRST_COMMIT
   else
-    LATEST_INDEXED_COMMIT=`$SPLUNK search "index=splunkgit repository=$GIT_REPO sourcetype="git_file_change" | sort 1 - _time | table commit_hash" -auth admin:changeme -app $APP_NAME | grep -oP '^\w+'`
+    LATEST_INDEXED_COMMIT=`$SPLUNK search "index=splunkgit repository=$GIT_REPO sourcetype="git_file_change" | sort 1 - _time | table commit_hash" -auth $SPLUNK_USERNAME:$SPLUNK_PASSWORD -app $APP_NAME | grep -oP '^\w+'`
     SINCE_COMMIT=$LATEST_INDEXED_COMMIT
   fi
 
@@ -87,7 +87,7 @@ UNIX_TIME_OF_SINCE_COMMIT=`git log $SINCE_COMMIT -n 1 --pretty=format:'%ct'`
 #else
 #for each file change in commit do:
 #print commit info in front of every file change.
-  git log --pretty=format:'[%ci] author_name="%an" author_mail="%ae" commit_hash="%H" parrent_hash="%P" tree_hash="%T"' --numstat --all --no-color --no-renames --no-merges --since=$UNIX_TIME_OF_SINCE_COMMIT $SINCE_COMMIT.. | sed '/^$/d' | awk -v FIRST_LINE=1 -v REPO="$GIT_REPO" -v RECENT_COMMIT=0 '{IS_COMMIT = match($0, /^\[/); if (IS_COMMIT) { if (RECENT_COMMIT==1) {print COMMIT_INFO } RECENT_COMMIT=1; COMMIT_INFO=$0} else {RECENT_COMMIT=0; print COMMIT_INFO" insertions=\""$1"\" deletions=\""$2"\" path=\""$3"\" file_type=\"---/"$3"---\" repository=\""REPO"\""}}' | perl -pe 's|---.*/(.+?)---|---\.\1---|' | perl -pe 's|---.*\.(.+?)---|\1|'
+  git log --pretty=format:'[%ci] author_name="%an" author_mail="%ae" commit_hash="%H" parent_hash="%P" tree_hash="%T"' --numstat --all --no-color --no-renames --no-merges --since=$UNIX_TIME_OF_SINCE_COMMIT $SINCE_COMMIT.. | sed '/^$/d' | awk -F '\t' -v FIRST_LINE=1 -v REPO="$GIT_REPO" -v RECENT_COMMIT=0 '{IS_COMMIT = match($0, /^\[/); if (IS_COMMIT) { if (RECENT_COMMIT==1) {print COMMIT_INFO } RECENT_COMMIT=1; COMMIT_INFO=$0} else {RECENT_COMMIT=0; print COMMIT_INFO" insertions=\""$1"\" deletions=\""$2"\" path=\""$3"\" file_type=\"---/"$3"---\" repository=\""REPO"\""}}' | perl -pe 's|---.*/(.+?)---|---\.\1---|' | perl -pe 's|---.*\.(.+?)---|\1|'
 }
 
 fetch_git_repository ()
