@@ -17,11 +17,8 @@
 # This script polls a git remote repo for changes and prints the results to standart out in a format splunk easily can read.
 # Author: Petter Eriksson, Emre Berge Ergenekon
 
-#Global variables
 SCRIPT_HOME=$(dirname $0)
-SPLUNK=$SPLUNK_HOME/bin/splunk
-APP_HOME=`$SPLUNK cmd ./$SCRIPT_HOME/app_home.sh`
-APP_NAME=`echo $APP_HOME | sed 's/.*\///'`
+source $SCRIPT_HOME/shell_variables.sh
 
 #Initializing
 GIT_REPO=
@@ -29,16 +26,11 @@ GIT_REPO_FOLDER=
 GIT_REPOS_HOME=
 chosen_repository=
 
-# Splunk variables
-username_password_script="$SPLUNK cmd python $SCRIPT_HOME/print_splunk_user_and_password.py"
-SPLUNK_USERNAME=`$username_password_script | grep -oP '^[^:]+'`
-SPLUNK_PASSWORD=`$username_password_script | grep -oP '(?<=:)(.*)'`
-
 main ()
 {
+$SCRIPT_HOME/git_fetch_repos.sh
 for repository in `$SPLUNK cmd python $SCRIPT_HOME/splunkgit_settings.py`
 do
-  echo "fetching git repo data for repository: $repository" 1>&2
   GIT_REPO=$repository
   GIT_REPO_FOLDER=`echo $GIT_REPO | sed 's/.*\///'`
   GIT_REPOS_HOME=$APP_HOME/git-repositories
@@ -51,7 +43,6 @@ do
       print_hashes_and_git_log_numstat
     else
       echo "repository does not exist!" 1>&2
-      fetch_git_repository
     fi
   fi
 done
@@ -91,19 +82,6 @@ UNIX_TIME_OF_SINCE_COMMIT=`git log $SINCE_COMMIT -n 1 --pretty=format:'%ct'`
 #print commit info in front of every file change.
   git log --pretty=format:"repository=\"$GIT_REPO\" [%ci] commit_hash=%H message=\"%B\"" --all --no-color --no-renames --no-merges --since=$UNIX_TIME_OF_SINCE_COMMIT $SINCE_COMMIT.. |
    sed '/^$/d'
-}
-
-fetch_git_repository ()
-{
-  error_output=err.out
-  mkdir -p $GIT_REPOS_HOME
-  git clone --mirror $GIT_REPO $chosen_repository 1>&2
-  git_exit_code=$?
-  if [[ $git_exit_code == 0 ]]; then
-    print_hashes_and_git_log_numstat # try again
-  else
-    echo "Unable to clone repository: $GIT_REPO" 1>&2
-  fi
 }
 
 main
