@@ -91,7 +91,7 @@ UNIX_TIME_OF_SINCE_COMMIT=`git log $SINCE_COMMIT -n 1 --pretty=format:'%ct'`
 #print commit info in front of every file change.
   git log --pretty=format:'[%ci] commit_hash=%H message="%B"' --all --no-color --no-renames --no-merges --since=$UNIX_TIME_OF_SINCE_COMMIT $SINCE_COMMIT.. |
    sed '/^$/d' |
-   awk -v REPO="$GIT_REPO" '{ print $0 " repository=\""REPO"\"" }'
+   awk -v REPO="$GIT_REPO" '{ print "repository=\""REPO"\" " $0 }'
 }
 
 fetch_git_repository ()
