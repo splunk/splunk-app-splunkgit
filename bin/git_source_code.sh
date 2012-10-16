@@ -61,10 +61,11 @@ print_hashes_and_git_log_numstat ()
   cd ..
   repo_with_files=$chosen_repository-with-files
   if [ ! -d "$repo_with_files" ]; then
-    git clone $chosen_repository $repo_with_files
+    git clone $chosen_repository $repo_with_files 1>&2
   fi
   cd $repo_with_files
-  git pull 1>&2
+  git reset --hard master 1>&2
+  git pull $chosen_repository master 1>&2
 
 # Find the last indexed commit.
 # If there are no indexed commits, get the first commit of the repository.
@@ -93,13 +94,13 @@ print_hashes_and_git_log_numstat ()
 #print commit info in front of every file change.
 
   for commit in `git rev-list --all --no-color --no-renames --no-merges --reverse --since=$UNIX_TIME_OF_SINCE_COMMIT $SINCE_COMMIT..`; do
-    git checkout $commit 2> /dev/null
+    git reset --hard $commit 2> /dev/null
     for file in `git diff HEAD^ --pretty=format:"" --numstat 2> /dev/null |
       sed '/^$/d' |
       awk -F '\t' '{ print $3 }' |
       sed 's/ /\\ /g' |
       grep -P "$file_pattern"`; do # Only catch .js files for now.
-        echo "commit_hash=$commit file=\"$file\""
+        echo "commit_hash=$commit repository=$GIT_REPO file=\"$file\"" 2> /dev/null
         cat "$file" 2> /dev/null
     done
   done
