@@ -94,8 +94,8 @@ print_hashes_and_git_log_numstat ()
 #print commit info in front of every file change.
 
   for commit in `git rev-list --all --no-color --no-renames --no-merges --reverse --since=$UNIX_TIME_OF_SINCE_COMMIT $SINCE_COMMIT..`; do
-    git reset --hard $commit 1>&2 /dev/null
-    for file in `git diff HEAD^ --pretty=format:"" --numstat 2> /dev/null |
+    git checkout $commit 1>&2 
+    for file in `git show $commit --pretty=format:"%n" --numstat 2> /dev/null |
       sed '/^$/d' |
       awk -F '\t' '{ print $3 }' |
       sed 's/ /\\ /g' |
