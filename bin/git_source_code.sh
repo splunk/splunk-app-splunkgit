@@ -94,14 +94,16 @@ print_hashes_and_git_log_numstat ()
 #print commit info in front of every file change.
 
   for commit in `git rev-list --all --no-color --no-renames --no-merges --reverse --since=$UNIX_TIME_OF_SINCE_COMMIT $SINCE_COMMIT..`; do
-    git checkout $commit 1>&2 
-    for file in `git show $commit --pretty=format:"%n" --numstat 2> /dev/null |
+    # debug: echo "working commit: $commit" 1>&2
+    git checkout $commit 1>&2 2> /dev/null
+    for file in `git show $commit --pretty=format:"" --numstat |
       sed '/^$/d' |
       awk -F '\t' '{ print $3 }' |
       sed 's/ /\\ /g' |
       grep -P "$file_pattern"`; do # Only catch .js files for now.
-        echo "commit_hash=$commit repository=$GIT_REPO file=\"$file\"" 2> /dev/null
-        cat "$file" 2> /dev/null
+        echo "commit_hash=$commit repository=$GIT_REPO file=\"$file\""
+        # debug: echo "commit_hash=$commit repository=$GIT_REPO file=\"$file\"" 1>&2
+        cat "$file"
     done
   done
 }
