@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# This script polls a git remote repo for changes and prints the results to standart out in a format splunk easily can read.
+# Prints the commit message event for each commit, including time, commit_hash and repository.
 # Author: Petter Eriksson, Emre Berge Ergenekon
 
 SCRIPT_HOME=$(dirname $0)
@@ -40,7 +40,7 @@ do
     echo "Could not find configured git repository. Have you configured splunkgit.conf? Read README.md for more information." 1>&2
   else
     if [ -d "$chosen_repository" ]; then
-      print_hashes_and_git_log_numstat
+      print_commit_message_event
     else
       echo "repository does not exist!" 1>&2
     fi
@@ -48,9 +48,7 @@ do
 done
 }
 
-#Not safe to run this method parallel from the same directory, since the $numstat_file is touched, written to and deleted.
-#TODO: Figure out a way to remove the $numstat_file logic.
-print_hashes_and_git_log_numstat ()
+print_commit_message_event ()
 {
   cd $chosen_repository
   git fetch 1>&2
@@ -75,11 +73,7 @@ print_hashes_and_git_log_numstat ()
 #       Otherwise, we can get commits that were made earlier than we would have wanted.
 UNIX_TIME_OF_SINCE_COMMIT=`git log $SINCE_COMMIT -n 1 --pretty=format:'%ct'`
 
-#For each commit in the repository do:
-#if commit doesn't have edited lines, just print 'time, author_name, author_mail, commit...'
-#else
-#for each file change in commit do:
-#print commit info in front of every file change.
+# Print repository, commit and commit messages for each commit, since the last indexed commit.
   git log --pretty=format:"repository=\"$GIT_REPO\" [%ci] commit_hash=%H message=\"%B\"" --all --no-color --no-renames --no-merges --since=$UNIX_TIME_OF_SINCE_COMMIT $SINCE_COMMIT.. |
    sed '/^$/d'
 }
