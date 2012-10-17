@@ -15,7 +15,7 @@
 # limitations under the License.
 
 # Prints the commit message event for each commit, including time, commit_hash and repository.
-# Author: Petter Eriksson, Emre Berge Ergenekon
+# Author: Petter Eriksson 
 
 SCRIPT_HOME=$(dirname $0)
 source $SCRIPT_HOME/shell_variables.sh

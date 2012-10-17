@@ -15,7 +15,7 @@
 # limitations under the License.
 
 # Script pulls the repositories configured in local/splunkgit.conf
-# Author: Petter Eriksson, Emre Berge Ergenekon
+# Author: Petter Eriksson
 
 SCRIPT_HOME=$(dirname $0)
 source $SCRIPT_HOME/shell_variables.sh 
