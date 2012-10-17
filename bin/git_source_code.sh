@@ -14,8 +14,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# This script polls a git remote repo for changes and prints the results to standart out in a format splunk easily can read.
-# Author: Petter Eriksson, Emre Berge Ergenekon
+# Prints the source code for all the changed files in each commit.
+# Takes one argument ($1), which is the file pattern that should be printed to stdout.
+# For example: '\.xml$' would only print the xml files that has been changed in the repository.
+# This script is disabled in the default/inputs.conf by default.
+# Author: Petter Eriksson
 
 SCRIPT_HOME=$(dirname $0)
 source $SCRIPT_HOME/shell_variables.sh
@@ -43,7 +46,7 @@ do
     echo "Could not find configured git repository. Have you configured splunkgit.conf? Read README.md for more information." 1>&2
   else
     if [ -d "$chosen_repository" ]; then
-      print_hashes_and_git_log_numstat
+      print_source_code
     else
       echo "repository does not exist!" 1>&2
     fi
@@ -51,13 +54,12 @@ do
 done
 }
 
-#Not safe to run this method parallel from the same directory, since the $numstat_file is touched, written to and deleted.
-#TODO: Figure out a way to remove the $numstat_file logic.
-print_hashes_and_git_log_numstat ()
+print_source_code ()
 {
   cd $chosen_repository
   git fetch 1>&2
 
+# Clone the repository with files instead of just bare/mirror
   cd ..
   repo_with_files=$chosen_repository-with-files
   if [ ! -d "$repo_with_files" ]; then
@@ -87,12 +89,8 @@ print_hashes_and_git_log_numstat ()
 #       Otherwise, we can get commits that were made earlier than we would have wanted.
   UNIX_TIME_OF_SINCE_COMMIT=`git log $SINCE_COMMIT -n 1 --pretty=format:'%ct'`
 
-#For each commit in the repository do:
-#if commit doesn't have edited lines, just print 'time, author_name, author_mail, commit...'
-#else
-#for each file change in commit do:
-#print commit info in front of every file change.
 
+# For each commit, checkout the commit and print all the changed files matching the file pattern in $1.
   for commit in `git rev-list --all --no-color --no-renames --no-merges --reverse --since=$UNIX_TIME_OF_SINCE_COMMIT $SINCE_COMMIT..`; do
     # debug: echo "working commit: $commit" 1>&2
     git checkout $commit 1>&2 2> /dev/null
