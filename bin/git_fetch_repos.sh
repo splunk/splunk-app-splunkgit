@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# This script polls a git remote repo for changes and prints the results to standart out in a format splunk easily can read.
+# Script pulls the repositories configured in local/splunkgit.conf
 # Author: Petter Eriksson, Emre Berge Ergenekon
 
 SCRIPT_HOME=$(dirname $0)
