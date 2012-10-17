@@ -14,7 +14,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# This script polls a git remote repo for changes and prints the results to standart out in a format splunk easily can read.
+# Script creates splunk events with each file change for all commits, with insertions and deletions.
+# Here's an example with some of the contents of these events: 
+# [10-12-23 12:34:56] commit=123adf32fa21 repository=repo path=src/clj/core.clj insertions=3 deletions=1
 # Author: Petter Eriksson, Emre Berge Ergenekon
 
 SCRIPT_HOME=$(dirname $0)
@@ -48,8 +50,6 @@ do
 done
 }
 
-#Not safe to run this method parallel from the same directory, since the $numstat_file is touched, written to and deleted.
-#TODO: Figure out a way to remove the $numstat_file logic.
 print_hashes_and_git_log_numstat ()
 {
   cd $chosen_repository
