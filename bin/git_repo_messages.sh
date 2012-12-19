@@ -59,12 +59,12 @@ print_commit_message_event ()
 
   commit_messages_search="index=splunkgit repository=$GIT_REPO sourcetype=git_commit_messages | head 1 | stats count"
 
-  HAS_INDEXED_COMMITS=`$SPLUNK search "$commit_messages_search" -auth $SPLUNK_USERNAME:$SPLUNK_PASSWORD -app $APP_NAME | grep -oP '\d+'`
+  HAS_INDEXED_COMMITS=`$SPLUNK search "$commit_messages_search" -auth $SPLUNK_USERNAME:$SPLUNK_PASSWORD -app $APP_NAME | egrep -o '\d+'`
   if [ "$HAS_INDEXED_COMMITS" = "0" ]; then
     FIRST_COMMIT=`git log --all --no-color --no-renames --no-merges --reverse --pretty=format:'%H' | head -n 1`
     SINCE_COMMIT=$FIRST_COMMIT
   else
-    LATEST_INDEXED_COMMIT=`$SPLUNK search "index=splunkgit repository=$GIT_REPO sourcetype=git_commit_messages | sort 1 - _time | table commit_hash" -auth $SPLUNK_USERNAME:$SPLUNK_PASSWORD -app $APP_NAME | grep -oP '^\w+'`
+    LATEST_INDEXED_COMMIT=`$SPLUNK search "index=splunkgit repository=$GIT_REPO sourcetype=git_commit_messages | sort 1 - _time | table commit_hash" -auth $SPLUNK_USERNAME:$SPLUNK_PASSWORD -app $APP_NAME | egrep -o '^\w+'`
     SINCE_COMMIT=$LATEST_INDEXED_COMMIT
   fi
 

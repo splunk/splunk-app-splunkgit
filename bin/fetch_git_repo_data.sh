@@ -19,6 +19,9 @@
 # [10-12-23 12:34:56] commit=123adf32fa21 repository=repo path=src/clj/core.clj insertions=3 deletions=1
 # Author: Petter Eriksson, Emre Berge Ergenekon
 
+set -e
+set -u
+
 SCRIPT_HOME=$(dirname $0)
 source $SCRIPT_HOME/shell_variables.sh
 
@@ -59,12 +62,12 @@ print_hashes_and_git_log_numstat ()
 # If there are no indexed commits, get the first commit of the repository.
   SINCE_COMMIT=""
 
-  HAS_INDEXED_COMMITS=`$SPLUNK search "index=splunkgit repository=$GIT_REPO sourcetype=git_file_change | head 1 | stats count" -auth $SPLUNK_USERNAME:$SPLUNK_PASSWORD -app $APP_NAME | grep -oP '\d+'`
+  HAS_INDEXED_COMMITS=`$SPLUNK search "index=splunkgit repository=$GIT_REPO sourcetype=git_file_change | head 1 | stats count" -auth $SPLUNK_USERNAME:$SPLUNK_PASSWORD -app $APP_NAME | egrep -o '\d+'`
   if [ "$HAS_INDEXED_COMMITS" = "0" ]; then
     FIRST_COMMIT=`git log --all --no-color --no-renames --no-merges --reverse --pretty=format:'%H' | head -n 1`
     SINCE_COMMIT=$FIRST_COMMIT
   else
-    LATEST_INDEXED_COMMIT=`$SPLUNK search "index=splunkgit repository=$GIT_REPO sourcetype="git_file_change" | sort 1 - _time | table commit_hash" -auth $SPLUNK_USERNAME:$SPLUNK_PASSWORD -app $APP_NAME | grep -oP '^\w+'`
+    LATEST_INDEXED_COMMIT=`$SPLUNK search "index=splunkgit repository=$GIT_REPO sourcetype="git_file_change" | sort 1 - _time | table commit_hash" -auth $SPLUNK_USERNAME:$SPLUNK_PASSWORD -app $APP_NAME | egrep -o '^\w+'`
     SINCE_COMMIT=$LATEST_INDEXED_COMMIT
   fi
 

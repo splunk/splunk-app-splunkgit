@@ -60,9 +60,9 @@ end_xml () {
 reload_views_for_splunkgit () {
   # Splunk variables
   username_password_script="$SPLUNK cmd python $SCRIPT_HOME/print_splunk_user_and_password.py"
-  SPLUNK_USERNAME=`$username_password_script | grep -oP '^[^:]+'`
-  SPLUNK_PASSWORD=`$username_password_script | grep -oP '(?<=:)(.*)'`
-  SPLUNKD_PORT=`$SPLUNK show splunkd-port | grep -oP '\d+?$'`
+  SPLUNK_USERNAME=`$username_password_script | cut -d ':' -f 1`
+  SPLUNK_PASSWORD=`$username_password_script | cut -d ':' -f 2`
+  SPLUNKD_PORT=`$SPLUNK show splunkd-port | egrep -o '\d+?$'`
 
   # Reload views for $APP_NAME (splunkgit)
   curl -s -u $SPLUNK_USERNAME:$SPLUNK_PASSWORD -k https://localhost:$SPLUNKD_PORT/servicesNS/nobody/$APP_NAME/data/ui/views/_reload > /dev/null

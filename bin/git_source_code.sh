@@ -75,12 +75,12 @@ print_source_code ()
 
   commit_messages_search="index=splunkgit repository=$GIT_REPO sourcetype=git_source_code | head 1 | stats count"
 
-  HAS_INDEXED_COMMITS=`$SPLUNK search "$commit_messages_search" -auth $SPLUNK_USERNAME:$SPLUNK_PASSWORD -app $APP_NAME | grep -oP '\d+'`
+  HAS_INDEXED_COMMITS=`$SPLUNK search "$commit_messages_search" -auth $SPLUNK_USERNAME:$SPLUNK_PASSWORD -app $APP_NAME | egrep -o '\d+'`
   if [ "$HAS_INDEXED_COMMITS" = "0" ]; then
     FIRST_COMMIT=`git log --all --no-color --no-renames --no-merges --reverse --pretty=format:'%H' | head -n 1`
     SINCE_COMMIT=$FIRST_COMMIT
   else
-    LATEST_INDEXED_COMMIT=`$SPLUNK search "index=splunkgit repository=$GIT_REPO sourcetype=git_source_code | sort 1 - _time | table commit_hash" -auth $SPLUNK_USERNAME:$SPLUNK_PASSWORD -app $APP_NAME | grep -oP '^\w+'`
+    LATEST_INDEXED_COMMIT=`$SPLUNK search "index=splunkgit repository=$GIT_REPO sourcetype=git_source_code | sort 1 - _time | table commit_hash" -auth $SPLUNK_USERNAME:$SPLUNK_PASSWORD -app $APP_NAME | egrep -o '^\w+'`
     SINCE_COMMIT=$LATEST_INDEXED_COMMIT
   fi
 
@@ -98,7 +98,7 @@ print_source_code ()
       sed '/^$/d' |
       awk -F '\t' '{ print $3 }' |
       sed 's/ /\\ /g' |
-      grep -P "$file_pattern"`; do # Only catch .js files for now.
+      egrep "$file_pattern"`; do # Catch the configured file pattern. 
         echo "commit_hash=$commit repository=$GIT_REPO file=\"$file\""
         # debug: echo "commit_hash=$commit repository=$GIT_REPO file=\"$file\"" 1>&2
         cat "$file"
