@@ -12,6 +12,16 @@ Stuff in this repository are mentioned on a four part blog series.
 - [part 3](http://blogs.splunk.com/2011/11/17/splunkgit-part-3)
 - [part 4](http://blogs.splunk.com/2011/11/18/splunkgit-part-4)
 
+Released v1.3.0.1 (12/19/2012)
+- Edited README.md!!
+
+Released v1.3! (12/19/2012, because of it's been a long time)
+- Fixes problem with grep -P, where -P is not supported by all grep versions.
+- Fixes git author page for Splunk 5.x
+- Some extractions of code, to hopefully make somethings easier to understand.
+- Splunking commit messages (No dashboards with this data yet)
+- Can splunk any source files (Non are enabled and there are no dashboards yet)
+
 Released v1.2.1! (02/15/2012)
 - All repositories are now non-flash, aka mobile supported.
 - Increased the days shown in multiple repositories from last 2 weeks to last 30 days.
@@ -33,10 +43,7 @@ Getting started
 - Follow the instructions on screen
 - When done continue to *Installing Splunkgit App* section
 
-`<SPLUNK_ROOT>` is the direcotry where you extracted splunk:
-
-[direct link]:http://www.splunk.com/index.php/download_track?file=4.2.4/splunk/osx/splunk-4.2.4-110225-Darwin-universal.tgz&platform=MacOS&architecture=x86&version=4.2.4&typed=release&name=osx_installer&d=pro
-       "Direct link to Splunk for MAC"
+`<SPLUNK_ROOT>` will from now on refer to the direcotry where you've extracted splunk.
 
 ### Installing splunkgit
 
@@ -93,12 +100,11 @@ Known issues
 ------------
 
 - If you clone this repository, install the app and start up Splunk without configurating your own splunkgit.conf (as explained in *Changing repository*) splunk will get git repository data from this repositories .git directory.
-- Currently only read-only addresses work. Don't use `https` or `git@github` addresses. 
 
 License
 -------
 
-    Copyright 2011 Splunk, Inc.
+    Copyright 2012 Splunk, Inc.
     
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
