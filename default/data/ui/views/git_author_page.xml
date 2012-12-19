@@ -24,21 +24,19 @@ limitations under the License.
 </input>
  </fieldset>
 
- <fieldset autoRun="false">
+ <label>File type</label>
+ <fieldset>
   <input type="dropdown" token="filetype">
-   <label>File type</label>
    <populatingSearch fieldForValue="file_type" fieldForLabel="file_type">index=splunkgit file_type=* | dedup file_type | sort file_type</populatingSearch>
-   <seed>*</seed>
-  <choice>*</choice>
-  <default>*</default>
-</input>
+   <default>*</default>
+ </input>
  </fieldset>
 
  <label>Files</label>
  <fieldset>
    <input type="text" token="file" />
    <label>File</label>
-   <seed>*</seed>
+   <default>*</default>
  </fieldset>
 
   <row>
