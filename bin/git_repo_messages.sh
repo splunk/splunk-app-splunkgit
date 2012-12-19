@@ -14,13 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Script creates splunk events with each file change for all commits, with insertions and deletions.
-# Here's an example with some of the contents of these events: 
-# [10-12-23 12:34:56] commit=123adf32fa21 repository=repo path=src/clj/core.clj insertions=3 deletions=1
-# Author: Petter Eriksson, Emre Berge Ergenekon
-
-set -e
-set -u
+# Prints the commit message event for each commit, including time, commit_hash and repository.
+# Author: Petter Eriksson 
 
 SCRIPT_HOME=$(dirname $0)
 source $SCRIPT_HOME/shell_variables.sh
@@ -33,7 +28,7 @@ chosen_repository=
 
 main ()
 {
-  $SCRIPT_HOME/git_fetch_repos.sh
+$SCRIPT_HOME/git_fetch_repos.sh
 for repository in `$SPLUNK cmd python $SCRIPT_HOME/splunkgit_settings.py`
 do
   GIT_REPO=$repository
@@ -45,7 +40,7 @@ do
     echo "Could not find configured git repository. Have you configured splunkgit.conf? Read README.md for more information." 1>&2
   else
     if [ -d "$chosen_repository" ]; then
-      print_hashes_and_git_log_numstat
+      print_commit_message_event
     else
       echo "repository does not exist!" 1>&2
     fi
@@ -53,7 +48,7 @@ do
 done
 }
 
-print_hashes_and_git_log_numstat ()
+print_commit_message_event ()
 {
   cd $chosen_repository
   git fetch 1>&2
@@ -62,12 +57,14 @@ print_hashes_and_git_log_numstat ()
 # If there are no indexed commits, get the first commit of the repository.
   SINCE_COMMIT=""
 
-  HAS_INDEXED_COMMITS=`$SPLUNK search "index=splunkgit repository=$GIT_REPO sourcetype=git_file_change | head 1 | stats count" -auth $SPLUNK_USERNAME:$SPLUNK_PASSWORD -app $APP_NAME | egrep -o '\d+'`
+  commit_messages_search="index=splunkgit repository=$GIT_REPO sourcetype=git_commit_messages | head 1 | stats count"
+
+  HAS_INDEXED_COMMITS=`$SPLUNK search "$commit_messages_search" -auth $SPLUNK_USERNAME:$SPLUNK_PASSWORD -app $APP_NAME | egrep -o '\d+'`
   if [ "$HAS_INDEXED_COMMITS" = "0" ]; then
     FIRST_COMMIT=`git log --all --no-color --no-renames --no-merges --reverse --pretty=format:'%H' | head -n 1`
     SINCE_COMMIT=$FIRST_COMMIT
   else
-    LATEST_INDEXED_COMMIT=`$SPLUNK search "index=splunkgit repository=$GIT_REPO sourcetype="git_file_change" | sort 1 - _time | table commit_hash" -auth $SPLUNK_USERNAME:$SPLUNK_PASSWORD -app $APP_NAME | egrep -o '^\w+'`
+    LATEST_INDEXED_COMMIT=`$SPLUNK search "index=splunkgit repository=$GIT_REPO sourcetype=git_commit_messages | sort 1 - _time | table commit_hash" -auth $SPLUNK_USERNAME:$SPLUNK_PASSWORD -app $APP_NAME | egrep -o '^\w+'`
     SINCE_COMMIT=$LATEST_INDEXED_COMMIT
   fi
 
@@ -76,28 +73,9 @@ print_hashes_and_git_log_numstat ()
 #       Otherwise, we can get commits that were made earlier than we would have wanted.
 UNIX_TIME_OF_SINCE_COMMIT=`git log $SINCE_COMMIT -n 1 --pretty=format:'%ct'`
 
-#For each commit in the repository do:
-#if commit doesn't have edited lines, just print 'time, author_name, author_mail, commit...'
-#else
-#for each file change in commit do:
-#print commit info in front of every file change.
-  git log --pretty=format:'[%ci] author_name="%an" author_mail="%ae" commit_hash="%H" parent_hash="%P" tree_hash="%T"' --numstat --all --no-color --no-renames --no-merges --since=$UNIX_TIME_OF_SINCE_COMMIT $SINCE_COMMIT.. |
-    sed '/^$/d' |
-    awk -F '\t' -v FIRST_LINE=1 -v REPO="$GIT_REPO" -v RECENT_COMMIT=0 '{
-      IS_COMMIT = match($0, /^\[/);
-      if (IS_COMMIT) {
-        if (RECENT_COMMIT==1) {
-          print COMMIT_INFO
-        }
-        RECENT_COMMIT=1;
-        COMMIT_INFO=$0
-      } else {
-        RECENT_COMMIT=0;
-        print COMMIT_INFO" insertions=\""$1"\" deletions=\""$2"\" path=\""$3"\" file_type=\"---/"$3"---\" repository=\""REPO"\""
-      }
-    }' |
-    perl -pe 's|---.*/(.+?)---|---\.\1---|' |
-    perl -pe 's|---.*\.(.+?)---|\1|'
+# Print repository, commit and commit messages for each commit, since the last indexed commit.
+  git log --pretty=format:"repository=\"$GIT_REPO\" [%ci] commit_hash=%H message=\"%B\"" --all --no-color --no-renames --no-merges --since=$UNIX_TIME_OF_SINCE_COMMIT $SINCE_COMMIT.. |
+   sed '/^$/d'
 }
 
 main
